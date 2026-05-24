@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.ecommerce_template.Routes
 
 data class BottomNavItem(
     val label: String,
@@ -23,17 +24,17 @@ data class BottomNavItem(
 )
 
 val defaultBottomNavItems = listOf(
-    BottomNavItem("Inicio", Icons.Default.Home, "home"),
-    BottomNavItem("Carrito", Icons.Default.ShoppingCart, "cart"),
-    BottomNavItem("Perfil", Icons.Default.Person, "profile"),
-    BottomNavItem("Histoial", Icons.Default.CalendarMonth, "history")
+    BottomNavItem("Inicio", Icons.Default.Home, Routes.SCREEN_A),
+    BottomNavItem("Detalle", Icons.Default.ShoppingCart, Routes.SCREEN_C),
+    BottomNavItem("Carrito", Icons.Default.Person, Routes.SCREEN_B),
+    BottomNavItem("Histoial", Icons.Default.CalendarMonth, Routes.SCREEN_D)
 )
 
 @Composable
 fun AppBottomBar(
     modifier: Modifier = Modifier,
     items: List<BottomNavItem> = defaultBottomNavItems,
-    currentRoute: String = "home",
+    currentRoute: String = Routes.SCREEN_A,
     onItemClick: (String) -> Unit = {}
 ) {
     NavigationBar(
@@ -45,7 +46,9 @@ fun AppBottomBar(
             val isSelected = currentRoute == item.route
             NavigationBarItem(
                 selected = isSelected,
-                onClick = { onItemClick(item.route) },
+                onClick = { onItemClick(
+                    item.route
+                ) },
                 icon = { Icon(item.icon, contentDescription = item.label) },
                 label = { Text(item.label, style = MaterialTheme.typography.labelSmall) },
                 colors = NavigationBarItemDefaults.colors(
