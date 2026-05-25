@@ -45,7 +45,11 @@ fun SearchBar(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier.fillMaxWidth(),
-        placeholder = { Text(text = placeholderText, color = MaterialTheme.colorScheme.onSurfaceVariant) },
+        placeholder = {
+            Text(text = placeholderText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+
+            )},
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         keyboardOptions = keyboardOptions,
