@@ -15,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -23,7 +25,7 @@ fun SearchBar(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    placeholderText: String = "Buscar suplementos...",
+    placeholderText: String = "[VACIO]",
     leadingIcon: @Composable (() -> Unit)? = {
         Icon(Icons.Default.Search, contentDescription = "Buscar", tint = MaterialTheme.colorScheme.onSurfaceVariant)
     },
@@ -47,8 +49,9 @@ fun SearchBar(
         modifier = modifier.fillMaxWidth(),
         placeholder = {
             Text(text = placeholderText,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontWeight = FontWeight.ExtraBold,
+                fontFamily = FontFamily.Monospace
             )},
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
