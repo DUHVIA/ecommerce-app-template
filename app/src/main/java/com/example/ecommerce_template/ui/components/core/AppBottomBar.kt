@@ -1,5 +1,6 @@
 package com.example.ecommerce_template.ui.components.core
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
@@ -20,36 +21,48 @@ data class IronNavItem(val label: String, val icon: ImageVector, val route: Stri
 
 val ironBottomNavItems = listOf(
     IronNavItem("HOME", Icons.Outlined.Home, "home"),
-    IronNavItem("SHOP", Icons.Outlined.ShoppingCart, "shop"), // Shop en vez de Carrito según tu diseño
+    IronNavItem("SHOP", Icons.Outlined.ShoppingCart, "shop"),
     IronNavItem("PROFILE", Icons.Outlined.Person, "profile")
 )
 
 @Composable
+fun RowScope.IronBottomBarItem(
+    item: IronNavItem,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    NavigationBarItem(
+        selected = isSelected,
+        onClick = onClick,
+        icon = { Icon(item.icon, contentDescription = item.label) },
+        label = { Text(item.label, style = MaterialTheme.typography.labelSmall) },
+        colors = NavigationBarItemDefaults.colors(
+            selectedIconColor = MaterialTheme.colorScheme.primary,
+            selectedTextColor = MaterialTheme.colorScheme.primary,
+            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            indicatorColor = Color.Transparent
+        )
+    )
+}
+
+@Composable
 fun IronBottomBar(
-    modifier: Modifier = Modifier,
-    items: List<IronNavItem> = ironBottomNavItems,
-    currentRoute: String = "home",
-    onItemClick: (String) -> Unit = {}
+    items: List<IronNavItem>,
+    currentRoute: String,
+    onItemClick: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     NavigationBar(
         modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.background, // Negro profundo
+        containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onSurface
     ) {
         items.forEach { item ->
-            val isSelected = currentRoute == item.route
-            NavigationBarItem(
-                selected = isSelected,
-                onClick = { onItemClick(item.route) },
-                icon = { Icon(item.icon, contentDescription = item.label) },
-                label = { Text(item.label, style = MaterialTheme.typography.labelSmall) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.primary, // Ícono Verde
-                    selectedTextColor = MaterialTheme.colorScheme.primary, // Texto Verde
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant, // Gris
-                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    indicatorColor = Color.Transparent // Quitamos el círculo de fondo por defecto
-                )
+            IronBottomBarItem(
+                item = item,
+                isSelected = currentRoute == item.route,
+                onClick = { onItemClick(item.route) }
             )
         }
     }
@@ -57,8 +70,12 @@ fun IronBottomBar(
 
 @Preview(showBackground = true)
 @Composable
-fun AppBottomBarPreview() {
+fun IronBottomBarPreview() {
     MaterialTheme {
-        IronBottomBar()
+        IronBottomBar(
+            items = ironBottomNavItems,
+            currentRoute = "home",
+            onItemClick = {}
+        )
     }
 }

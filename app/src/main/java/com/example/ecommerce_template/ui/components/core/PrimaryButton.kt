@@ -2,6 +2,7 @@ package com.example.ecommerce_template.ui.components.core
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,36 +20,61 @@ import androidx.compose.ui.unit.dp
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
 
 @Composable
-fun PrimaryButton(
+fun IronButtonContent(
     text: String,
+    leadingIcon: @Composable (() -> Unit)? = null
+) {
+    if (leadingIcon != null) {
+        leadingIcon()
+        Spacer(modifier = Modifier.width(8.dp))
+    }
+    Text(
+        text = text.uppercase(),
+        style = MaterialTheme.typography.labelLarge
+    )
+}
+
+@Composable
+fun PrimaryButtonBase(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    leadingIcon: @Composable (() -> Unit)? = null
+    enabled: Boolean = true,
+    content: @Composable RowScope.() -> Unit
 ) {
     Button(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(50.dp), // Botones un poco más altos y prominentes
-        shape = RoundedCornerShape(4.dp), // Bordes casi cuadrados
+            .height(50.dp),
+        shape = RoundedCornerShape(4.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary, // Verde Neón
-            contentColor = MaterialTheme.colorScheme.onPrimary  // Negro
-        )
-    ) {
-        if (leadingIcon != null) {
-            leadingIcon()
-            Spacer(modifier = Modifier.width(8.dp))
-        }
-        Text(text = text.uppercase(), style = MaterialTheme.typography.labelLarge)
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        ),
+        enabled = enabled,
+        content = content
+    )
+}
+
+@Composable
+fun PrimaryButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    leadingIcon: @Composable (() -> Unit)? = null
+) {
+    PrimaryButtonBase(onClick = onClick, modifier = modifier, enabled = enabled) {
+        IronButtonContent(text = text, leadingIcon = leadingIcon)
     }
 }
 
 @Composable
-fun SecondaryOutlinedButton(
-    text: String,
+fun SecondaryOutlinedButtonBase(
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    content: @Composable RowScope.() -> Unit
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -59,19 +85,33 @@ fun SecondaryOutlinedButton(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant),
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = MaterialTheme.colorScheme.onSurface
-        )
-    ) {
-        Text(text = text.uppercase(), style = MaterialTheme.typography.labelLarge)
+        ),
+        enabled = enabled,
+        content = content
+    )
+}
+
+@Composable
+fun SecondaryOutlinedButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    leadingIcon: @Composable (() -> Unit)? = null
+) {
+    SecondaryOutlinedButtonBase(onClick = onClick, modifier = modifier, enabled = enabled) {
+        IronButtonContent(text = text, leadingIcon = leadingIcon)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun PrimaryButtonPreview() {
+fun ButtonsPreview() {
     IronCoreTheme {
         Column {
             PrimaryButton(text = "Comprar Proteína", onClick = {})
-            SecondaryOutlinedButton(text = "Comprar Proteína", onClick = {})
+            Spacer(modifier = Modifier.height(8.dp))
+            SecondaryOutlinedButton(text = "Ver Detalles", onClick = {})
         }
     }
 }
