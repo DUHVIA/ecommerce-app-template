@@ -228,6 +228,6 @@ fun SummaryRow(label: String, value: String) {
 @Composable
 fun CartScreenPreview() {
     IronCoreTheme {
-        CartScreen()
+        CartScreen(onNavigateToDetail = {})
     }
 }
