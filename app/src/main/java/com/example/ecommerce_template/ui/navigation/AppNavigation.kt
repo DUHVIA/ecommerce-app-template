@@ -82,7 +82,10 @@ fun AppNavigation() {
             }
 
             composable(Routes.CART) {
-                CartScreen()
+                CartScreen(onNavigateToDetail = { productId ->
+                    // 🧭 Viaja a la pantalla de detalle
+                    navController.navigate(Routes.PRODUCT_DETAIL)
+                })
             }
 
             composable(Routes.HISTORY) {

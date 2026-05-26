@@ -54,7 +54,10 @@ val initialCartItems = listOf(
 // ---------------------------------
 
 @Composable
-fun CartScreen(modifier: Modifier = Modifier) {
+fun CartScreen(
+    onNavigateToDetail: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     // Estado reactivo para la lista (permite simular que sumamos o restamos cantidades)
     val cartItems = remember { mutableStateListOf(*initialCartItems.toTypedArray()) }
 
@@ -108,7 +111,8 @@ fun CartScreen(modifier: Modifier = Modifier) {
                         cartItems[index] = item.copy(quantity = item.quantity - 1)
                     }
                 },
-                onRemove = { cartItems.remove(item) }
+                onRemove = { cartItems.remove(item) },
+                onClick = { onNavigateToDetail(item.id) }
             )
         }
 
