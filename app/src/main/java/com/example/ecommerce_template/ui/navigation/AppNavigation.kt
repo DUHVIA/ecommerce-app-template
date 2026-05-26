@@ -20,6 +20,7 @@ import com.example.ecommerce_template.ui.screens.PurchaseHistoryScreen
 import com.example.ecommerce_template.ui.components.core.IronBottomBar
 import com.example.ecommerce_template.ui.components.core.IronCoreTopBar
 import com.example.ecommerce_template.ui.components.core.IronNavItem
+import com.example.ecommerce_template.ui.screens.LoginScreen
 
 val BottomNavItems = listOf(
     IronNavItem("HOME", Icons.Outlined.Home, Routes.HOME),
@@ -67,6 +68,17 @@ fun AppNavigation() {
             startDestination = Routes.HOME,
             modifier = Modifier.padding(innerPadding)
         ) {
+            composable(Routes.LOGIN) {
+                LoginScreen(
+                    onLoginSuccess = {
+                        navController.navigate(Routes.HOME) {
+                            popUpTo(Routes.LOGIN) { inclusive = true }
+                        }
+                    },
+                    onRegisterClick = { /* Navegar a registro si existiera */ }
+                )
+            }
+
             composable(Routes.HOME) {
                 HomeScreen()
             }
