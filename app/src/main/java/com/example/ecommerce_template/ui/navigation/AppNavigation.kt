@@ -13,14 +13,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-
-// Asegúrate de importar tus pantallas correctamente
-import com.example.ecommerce_template.screens.CartScreen
-import com.example.ecommerce_template.screens.HomeScreen
-import com.example.ecommerce_template.screens.ProductDetailScreen
-import com.example.ecommerce_template.screens.PurchaseHistoryScreen
-
-// Importamos nuestros nuevos componentes de la Fase 2
+import com.example.ecommerce_template.ui.screens.CartScreen
+import com.example.ecommerce_template.ui.screens.HomeScreen
+import com.example.ecommerce_template.ui.screens.ProductDetailScreen
+import com.example.ecommerce_template.ui.screens.PurchaseHistoryScreen
 import com.example.ecommerce_template.ui.components.core.IronBottomBar
 import com.example.ecommerce_template.ui.components.core.IronCoreTopBar
 import com.example.ecommerce_template.ui.components.core.IronNavItem

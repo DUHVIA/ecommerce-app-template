@@ -1,6 +1,5 @@
-package com.example.ecommerce_template.screens
+package com.example.ecommerce_template.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,7 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.ecommerce_template.ui.components.core.IronSearchBar
@@ -55,7 +54,7 @@ val trendingProducts = listOf(
     DummyProduct("6", "RECOVERY", "BCAA MATRIX...", 32.99, null)
 )
 
-data class DummyCategory(val title: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)
+data class DummyCategory(val title: String, val icon: ImageVector)
 val categories = listOf(
     DummyCategory("GEAR", Icons.Default.FitnessCenter),
     DummyCategory("PROTEINS", Icons.Default.LocalDrink),

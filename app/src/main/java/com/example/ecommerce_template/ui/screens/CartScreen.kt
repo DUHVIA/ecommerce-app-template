@@ -1,4 +1,4 @@
-package com.example.ecommerce_template.screens
+package com.example.ecommerce_template.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
