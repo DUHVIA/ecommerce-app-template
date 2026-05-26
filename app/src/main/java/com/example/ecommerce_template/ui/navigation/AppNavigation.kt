@@ -21,7 +21,6 @@ import com.example.ecommerce_template.ui.components.core.IronBottomBar
 import com.example.ecommerce_template.ui.components.core.IronCoreTopBar
 import com.example.ecommerce_template.ui.components.core.IronNavItem
 
-// Definimos solo 3 items principales para la barra inferior
 val BottomNavItems = listOf(
     IronNavItem("HOME", Icons.Outlined.Home, Routes.HOME),
     IronNavItem("SHOP", Icons.Outlined.ShoppingCart, Routes.CART),
@@ -34,12 +33,10 @@ fun AppNavigation() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: Routes.HOME
 
-    // Ocultamos el BottomBar si estamos en el detalle del producto
     val showBottomBar = currentRoute in listOf(Routes.HOME, Routes.CART, Routes.HISTORY)
 
     Scaffold(
         topBar = {
-            // La barra superior se mantiene global en este caso
             IronCoreTopBar(
                 onMenuClick = { /* Abrir drawer en el futuro */ },
                 onCartClick = { navController.navigate(Routes.CART) }
@@ -53,7 +50,6 @@ fun AppNavigation() {
                     onItemClick = { targetRoute ->
                         if (currentRoute != targetRoute) {
                             navController.navigate(targetRoute) {
-                                // Evita acumular múltiples copias del mismo destino
                                 popUpTo(Routes.HOME) {
                                     saveState = true
                                 }
@@ -72,14 +68,11 @@ fun AppNavigation() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Routes.HOME) {
-                // Si HomeScreen necesita navegar al detalle, puedes pasarle un lambda:
-                // HomeScreen(onNavigateToDetail = { navController.navigate(Routes.PRODUCT_DETAIL) })
                 HomeScreen()
             }
 
             composable(Routes.CART) {
                 CartScreen(onNavigateToDetail = { productId ->
-                    // 🧭 Viaja a la pantalla de detalle
                     navController.navigate(Routes.PRODUCT_DETAIL)
                 })
             }

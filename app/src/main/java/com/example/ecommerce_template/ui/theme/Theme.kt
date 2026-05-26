@@ -11,7 +11,7 @@ import androidx.core.view.WindowCompat
 
 private val IronCoreDarkColorScheme = darkColorScheme(
     primary = PrimaryNeon,
-    onPrimary = NeutralBlack, // Texto negro sobre botones verdes
+    onPrimary = NeutralBlack,
     secondary = SecondaryDark,
     onSecondary = TextWhite,
     tertiary = TertiaryTeal,
@@ -19,7 +19,7 @@ private val IronCoreDarkColorScheme = darkColorScheme(
     onBackground = TextWhite,
     surface = NeutralBlack,
     onSurface = TextWhite,
-    surfaceVariant = SurfaceCard, // Para las tarjetas de productos
+    surfaceVariant = SurfaceCard,
     onSurfaceVariant = TextGray
 )
 
@@ -30,7 +30,6 @@ fun IronCoreTheme(
     val colorScheme = IronCoreDarkColorScheme
     val view = LocalView.current
 
-    // Esto asegura que la barra de estado de Android sea negra
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window

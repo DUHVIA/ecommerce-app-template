@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ShoppingCart
@@ -20,17 +21,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun IronProductCard(
-    badgeText: String?, // Ej: "HOT", "ELITE" (Puede ser null)
+    badgeText: String?,
     badgeColor: Color = MaterialTheme.colorScheme.primary,
     category: String,
     title: String,
@@ -46,15 +49,12 @@ fun IronProductCard(
         )
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            // Contenedor de la Imagen y el Badge
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1f) // Cuadrado perfecto
+                    .aspectRatio(1f)
                     .background(Color(0xFF0F0F0F), RoundedCornerShape(4.dp))
             ) {
-                // Aquí iría el componente de imagen real (AsyncImage de Coil, por ejemplo)
-                // Usamos un placeholder negro por ahora.
 
                 if (badgeText != null) {
                     Text(
@@ -101,7 +101,7 @@ fun IronProductCard(
                     onClick = onAddToCart,
                     modifier = Modifier.size(36.dp),
                     colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = Color(0xFF333333), // Gris un poco más claro que el fondo
+                        containerColor = Color(0xFF333333),
                         contentColor = Color.White
                     )
                 ) {
@@ -112,6 +112,23 @@ fun IronProductCard(
                     )
                 }
             }
+        }
+    }
+}
+
+@Preview(name = "Light Mode", showBackground = true)
+@Composable
+fun IronProductCardPreview() {
+    MaterialTheme {
+        Surface(modifier = Modifier.padding(16.dp)) {
+            IronProductCard(
+                badgeText = "NEW",
+                category = "Calzado",
+                title = "Zapatillas Iron Runner Pro",
+                price = 129.99,
+                onAddToCart = {},
+                modifier = Modifier.width(180.dp)
+            )
         }
     }
 }

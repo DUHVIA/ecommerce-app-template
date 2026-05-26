@@ -80,7 +80,6 @@ fun PurchaseHistoryScreen(modifier: Modifier = Modifier) {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Cabecera "ORDER HISTORY"
         item {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
