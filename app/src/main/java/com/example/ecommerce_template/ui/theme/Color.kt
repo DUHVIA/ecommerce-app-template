@@ -11,4 +11,4 @@ val NeutralBlack = Color(0xFF0F0F0F)
 // Colores de apoyo para textos y bordes
 val TextWhite = Color(0xFFFFFFFF)
 val TextGray = Color(0xFFAAAAAA)
-val SurfaceCard = Color(0xFF161616) // Un tono ligeramente superior al NeutralBlack para las tarjetas
+val SurfaceCard = Color(0xFF161616)

@@ -38,7 +38,6 @@ fun IronCoreTopBar(
         },
         actions = {
             IconButton(onClick = onCartClick) {
-                // Aquí luego podemos envolver el ícono en un BadgeBox para mostrar la cantidad
                 Icon(
                     imageVector = Icons.Outlined.ShoppingCart,
                     contentDescription = "Carrito",

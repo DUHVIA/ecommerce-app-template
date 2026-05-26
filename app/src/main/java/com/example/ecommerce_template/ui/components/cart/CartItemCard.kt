@@ -17,11 +17,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -29,7 +31,7 @@ import androidx.compose.ui.unit.sp
 fun CartItemCard(
     category: String,
     title: String,
-    variantDetails: String, // Ej: "FLAVOR: DARK CHOCOLATE / 2.2KG"
+    variantDetails: String,
     price: Double,
     quantity: Int,
     onIncrease: () -> Unit,
@@ -50,7 +52,6 @@ fun CartItemCard(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Cuadro de la Imagen
             Box(
                 modifier = Modifier
                     .size(80.dp)
@@ -134,6 +135,42 @@ fun CartItemCard(
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Preview(name = "Cart Item Preview", showBackground = true)
+@Composable
+fun CartItemCardPreview() {
+    MaterialTheme {
+        Surface(modifier = Modifier.padding(16.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                CartItemCard(
+                    category = "Calzado",
+                    title = "Zapatillas Iron Runner Pro",
+                    variantDetails = "Talla: 42 | Color: Negro",
+                    price = 129.99,
+                    quantity = 1,
+                    onIncrease = {},
+                    onDecrease = {},
+                    onRemove = {},
+                    onClick = {}
+                )
+
+                CartItemCard(
+                    category = "Accesorios",
+                    title = "Medias Deportivas Pack x3",
+                    variantDetails = "Talla: Única | Color: Blanco",
+                    price = 15.00,
+                    quantity = 12,
+                    onIncrease = {},
+                    onDecrease = {},
+                    onRemove = {},
+                    onClick = {}
+                )
             }
         }
     }

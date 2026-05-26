@@ -29,11 +29,11 @@ fun PrimaryButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(50.dp), // Botones un poco más altos y prominentes
-        shape = RoundedCornerShape(4.dp), // Bordes casi cuadrados
+            .height(50.dp),
+        shape = RoundedCornerShape(4.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary, // Verde Neón
-            contentColor = MaterialTheme.colorScheme.onPrimary  // Negro
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
         )
     ) {
         if (leadingIcon != null) {
@@ -71,7 +71,6 @@ fun PrimaryButtonPreview() {
     IronCoreTheme {
         Column {
             PrimaryButton(text = "Comprar Proteína", onClick = {})
-            SecondaryOutlinedButton(text = "Comprar Proteína", onClick = {})
         }
     }
 }

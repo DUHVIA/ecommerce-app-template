@@ -17,19 +17,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ecommerce_template.ui.components.core.PrimaryButton
 import com.example.ecommerce_template.ui.components.core.SecondaryOutlinedButton
 
 @Composable
 fun OrderHistoryCard(
-    status: String, // Ej: "DELIVERED" o "IN TRANSIT"
-    isDelivered: Boolean, // Para cambiar el color del indicador (Verde o Cian)
+    status: String,
+    isDelivered: Boolean,
     date: String,
     orderId: String,
     itemsSummary: String,
@@ -43,12 +45,11 @@ fun OrderHistoryCard(
         shape = RoundedCornerShape(4.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant // Fondo tipo tarjeta
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
 
-            // Header: Estado y Fecha
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -59,7 +60,7 @@ fun OrderHistoryCard(
                         modifier = Modifier
                             .size(6.dp)
                             .background(
-                                color = if (isDelivered) MaterialTheme.colorScheme.primary else Color(0xFF2DD4BF), // Neón o Teal
+                                color = if (isDelivered) MaterialTheme.colorScheme.primary else Color(0xFF2DD4BF),
                                 shape = CircleShape
                             )
                     )
@@ -79,7 +80,6 @@ fun OrderHistoryCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Número de Orden
             Text(
                 text = orderId.uppercase(),
                 style = MaterialTheme.typography.headlineMedium
@@ -87,7 +87,6 @@ fun OrderHistoryCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Resumen de productos
             Text(
                 text = itemsSummary,
                 style = MaterialTheme.typography.bodyMedium,
@@ -96,7 +95,6 @@ fun OrderHistoryCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Total
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "TOTAL",
@@ -112,7 +110,6 @@ fun OrderHistoryCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botones de acción reutilizados
             PrimaryButton(
                 text = "REORDER",
                 onClick = onReorderClick
@@ -122,6 +119,43 @@ fun OrderHistoryCard(
                 text = "DETAILS",
                 onClick = onDetailsClick
             )
+        }
+    }
+}
+
+@Preview(name = "Order History Preview", showBackground = true)
+@Composable
+fun OrderHistoryCardPreview() {
+    MaterialTheme {
+        Surface(modifier = Modifier.padding(16.dp)) {
+            Column(
+                // Mostramos los dos estados posibles espaciados entre sí
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                // Caso 1: Pedido entregado (Usa el color primario del tema)
+                OrderHistoryCard(
+                    status = "Delivered",
+                    isDelivered = true,
+                    date = "24 MAY 2026",
+                    orderId = "#ORD-2026-98743",
+                    itemsSummary = "Zapatillas Iron Runner Pro (x1), Medias Deportivas Pack x3 (x2)",
+                    total = 159.99,
+                    onReorderClick = {},
+                    onDetailsClick = {}
+                )
+
+                // Caso 2: Pedido pendiente o en camino (Usa el color Turquesa 0xFF2DD4BF)
+                OrderHistoryCard(
+                    status = "In Transit",
+                    isDelivered = false,
+                    date = "HOY, 11:30 AM",
+                    orderId = "#ORD-2026-99102",
+                    itemsSummary = "Camiseta Deportiva Transpirable (x1), Gorra Ajustable Iron (x1)",
+                    total = 40.49,
+                    onReorderClick = {},
+                    onDetailsClick = {}
+                )
+            }
         }
     }
 }
