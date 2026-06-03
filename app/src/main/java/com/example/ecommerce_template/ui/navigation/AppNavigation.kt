@@ -20,7 +20,7 @@ import com.example.ecommerce_template.ui.screens.PurchaseHistoryScreen
 import com.example.ecommerce_template.ui.components.core.IronBottomBar
 import com.example.ecommerce_template.ui.components.core.IronCoreTopBar
 import com.example.ecommerce_template.ui.components.core.IronNavItem
-import com.example.ecommerce_template.ui.screens.LoginScreen
+import com.example.ecommerce_template.ui.screens.auth.LoginScreen
 
 val BottomNavItems = listOf(
     IronNavItem("HOME", Icons.Outlined.Home, Routes.HOME),
