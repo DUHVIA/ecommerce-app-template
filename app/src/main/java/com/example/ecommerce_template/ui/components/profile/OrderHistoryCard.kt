@@ -27,7 +27,140 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ecommerce_template.ui.components.core.PrimaryButton
 import com.example.ecommerce_template.ui.components.core.SecondaryOutlinedButton
+// Asegúrate de tener tu IronCoreTheme si lo estás usando
+// import com.example.ecommerce_template.ui.theme.IronCoreTheme
 
+//SOLID APPLIED
+// 1. Componente de Cabecera (SRP: Solo maneja estado, color del estado y fecha)
+@Composable
+fun OrderStatusHeader(
+    status: String,
+    isDelivered: Boolean,
+    date: String,
+    modifier: Modifier = Modifier
+) {
+    val statusColor = if (isDelivered) MaterialTheme.colorScheme.primary else Color(0xFF2DD4BF)
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .background(color = statusColor, shape = CircleShape)
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = status.uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                color = statusColor
+            )
+        }
+        Text(
+            text = date,
+            style = MaterialTheme.typography.labelSmall,
+            color = Color.Gray
+        )
+    }
+}
+
+// 2. Componente de Información (SRP: Maneja la tipografía del ID y el resumen)
+@Composable
+fun OrderInfoContent(
+    orderId: String,
+    itemsSummary: String,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = orderId.uppercase(),
+            style = MaterialTheme.typography.headlineMedium
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = itemsSummary,
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.LightGray
+        )
+    }
+}
+
+// 3. Componente de Total (SRP: Maneja el formato del precio final)
+@Composable
+fun OrderTotalAmount(
+    total: Double,
+    modifier: Modifier = Modifier
+) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
+        Text(
+            text = "TOTAL",
+            style = MaterialTheme.typography.labelSmall,
+            color = Color.Gray
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = "$$total",
+            style = MaterialTheme.typography.headlineMedium
+        )
+    }
+}
+
+// 4. Componente de Acciones (SRP: Agrupa los botones de esta tarjeta)
+@Composable
+fun OrderActionButtons(
+    onReorderClick: () -> Unit,
+    onDetailsClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        PrimaryButton(
+            text = "REORDER",
+            onClick = onReorderClick
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        SecondaryOutlinedButton(
+            text = "DETAILS",
+            onClick = onDetailsClick
+        )
+    }
+}
+
+// 5. Contenedor Base (OCP: Abierto a recibir distintos bloques a través de slots)
+@Composable
+fun OrderHistoryCardBase(
+    modifier: Modifier = Modifier,
+    headerSlot: @Composable () -> Unit,
+    infoSlot: @Composable () -> Unit,
+    totalSlot: @Composable () -> Unit,
+    actionSlot: @Composable () -> Unit
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(4.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            headerSlot()
+            Spacer(modifier = Modifier.height(8.dp))
+
+            infoSlot()
+            Spacer(modifier = Modifier.height(16.dp))
+
+            totalSlot()
+            Spacer(modifier = Modifier.height(16.dp))
+
+            actionSlot()
+        }
+    }
+}
+
+// 6. El Componente Final (Orquestador: Une la base con las piezas específicas)
 @Composable
 fun OrderHistoryCard(
     status: String,
@@ -40,99 +173,36 @@ fun OrderHistoryCard(
     onDetailsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(4.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(6.dp)
-                            .background(
-                                color = if (isDelivered) MaterialTheme.colorScheme.primary else Color(0xFF2DD4BF),
-                                shape = CircleShape
-                            )
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = status.uppercase(),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = if (isDelivered) MaterialTheme.colorScheme.primary else Color(0xFF2DD4BF)
-                    )
-                }
-                Text(
-                    text = date,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Gray
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = orderId.uppercase(),
-                style = MaterialTheme.typography.headlineMedium
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = itemsSummary,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.LightGray
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "TOTAL",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Gray
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "$$total",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            PrimaryButton(
-                text = "REORDER",
-                onClick = onReorderClick
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            SecondaryOutlinedButton(
-                text = "DETAILS",
-                onClick = onDetailsClick
-            )
+    OrderHistoryCardBase(
+        modifier = modifier,
+        headerSlot = {
+            OrderStatusHeader(status = status, isDelivered = isDelivered, date = date)
+        },
+        infoSlot = {
+            OrderInfoContent(orderId = orderId, itemsSummary = itemsSummary)
+        },
+        totalSlot = {
+            OrderTotalAmount(total = total)
+        },
+        actionSlot = {
+            OrderActionButtons(onReorderClick = onReorderClick, onDetailsClick = onDetailsClick)
         }
-    }
+    )
 }
 
+// 7. Preview Integrado
 @Preview(name = "Order History Preview", showBackground = true)
 @Composable
 fun OrderHistoryCardPreview() {
     MaterialTheme {
-        Surface(modifier = Modifier.padding(16.dp)) {
+        Surface(
+            modifier = Modifier.padding(16.dp),
+            color = MaterialTheme.colorScheme.background // Ayuda a ver el contraste del borde
+        ) {
             Column(
-                // Mostramos los dos estados posibles espaciados entre sí
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                // Caso 1: Pedido entregado (Usa el color primario del tema)
+                // Caso 1: Pedido entregado
                 OrderHistoryCard(
                     status = "Delivered",
                     isDelivered = true,
@@ -144,7 +214,7 @@ fun OrderHistoryCardPreview() {
                     onDetailsClick = {}
                 )
 
-                // Caso 2: Pedido pendiente o en camino (Usa el color Turquesa 0xFF2DD4BF)
+                // Caso 2: Pedido pendiente o en camino
                 OrderHistoryCard(
                     status = "In Transit",
                     isDelivered = false,
