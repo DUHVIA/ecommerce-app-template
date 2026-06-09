@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.ecommerce_template.ui.theme.IronCoreTheme
 
 data class IronNavItem(val label: String, val icon: ImageVector, val route: String)
 
@@ -25,6 +26,7 @@ val ironBottomNavItems = listOf(
     IronNavItem("PROFILE", Icons.Outlined.Person, "profile")
 )
 
+//SOLID APPLIED
 @Composable
 fun RowScope.IronBottomBarItem(
     item: IronNavItem,
@@ -71,7 +73,7 @@ fun IronBottomBar(
 @Preview(showBackground = true)
 @Composable
 fun IronBottomBarPreview() {
-    MaterialTheme {
+    IronCoreTheme {
         IronBottomBar(
             items = ironBottomNavItems,
             currentRoute = "home",

@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
 
+//SOLID APPLIED
 @Composable
 fun IronTextFieldBase(
     value: String,
