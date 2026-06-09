@@ -1,6 +1,8 @@
 package com.example.ecommerce_template.data.product
 
-class ProductRepository {
+import com.example.ecommerce_template.R
+
+object ProductRepository {
 
     private val mockProducts = listOf(
         Product(
@@ -9,7 +11,7 @@ class ProductRepository {
             description = "Aislado de proteína de suero de leche, 24g de proteína por servicio. Sabor Chocolate.",
             price = 149.90,
             category = "Suplementos",
-            imageUrl = null,
+            imageRes = R.drawable.prod_proteina,
             stock = 15
         ),
         Product(
@@ -18,7 +20,7 @@ class ProductRepository {
             description = "Creatina micronizada pura para mejorar la fuerza y el rendimiento muscular. Sin sabor.",
             price = 89.00,
             category = "Suplementos",
-            imageUrl = null,
+            imageRes = R.drawable.prod_creatina,
             stock = 20
         ),
         Product(
@@ -27,7 +29,7 @@ class ProductRepository {
             description = "Cinturón de soporte lumbar de alta resistencia, 10mm de grosor con hebilla de acero.",
             price = 120.00,
             category = "Accesorios",
-            imageUrl = null,
+            imageRes = R.drawable.prod_cinturon,
             stock = 5
         ),
         Product(
@@ -36,32 +38,23 @@ class ProductRepository {
             description = "Mancuernas de caucho de alta calidad con mango cromado ergonómico y antideslizante.",
             price = 160.00,
             category = "Equipamiento",
-            imageUrl = null,
+            imageRes = R.drawable.prod_mancuerna,
             stock = 8
         ),
         Product(
             id = 5,
-            name = "Shaker / Mezclador Pro 700ml",
+            name = "Shaker / Mezclador Pro 600ml",
             description = "Vaso mezclador con compartimento para pastillas y polvo. Libre de BPA.",
             price = 25.00,
             category = "Accesorios",
-            imageUrl = null,
+            imageRes = R.drawable.prod_shaker,
             stock = 50
         )
     )
 
-    // 1. Obtener todo el catálogo para la pantalla principal (Home)
-    fun getAllProducts(): List<Product> {
-        return mockProducts
-    }
+    fun getAllProducts(): List<Product> = mockProducts
 
-    // 2. Obtener un producto específico para la pantalla de "Detalle del Producto"
-    fun getProductById(id: Int): Product? {
-        return mockProducts.find { it.id == id }
-    }
+    fun getProductById(id: Int): Product? = mockProducts.find { it.id == id }
 
-    // 3. Opcional: Filtrar por categoría en la interfaz
-    fun getProductsByCategory(category: String): List<Product> {
-        return mockProducts.filter { it.category == category }
-    }
+    fun getProductsByCategory(category: String): List<Product> = mockProducts.filter { it.category == category }
 }

@@ -37,30 +37,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.ecommerce_template.ui.components.core.IronSearchBar
-import com.example.ecommerce_template.ui.components.product.CategoryChip
+//import com.example.ecommerce_template.ui.components.product.CategoryChip
 import com.example.ecommerce_template.ui.components.product.IronProductCard
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.ecommerce_template.data.cart.CartRepository
+import com.example.ecommerce_template.data.product.ProductRepository
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
-
-// --- MOCK DATA PARA VERLO FUNCIONAR ---
-data class DummyProduct(val id: String, val category: String, val title: String, val price: Double, val badge: String?)
-
-val trendingProducts = listOf(
-    DummyProduct("1", "SUPPLEMENTS", "WHEY ISOLATE...", 59.99, "HOT"),
-    DummyProduct("2", "EQUIPMENT", "HEX DUMBBELL...", 124.00, null),
-    DummyProduct("3", "ACCESSORIES", "PRO LIFTING...", 24.99, null),
-    DummyProduct("4", "ACCESSORIES", "TITANIUM...", 35.00, "ELITE"),
-    DummyProduct("5", "PRE-WORKOUT", "IGNITE V2...", 44.99, "HOT"),
-    DummyProduct("6", "RECOVERY", "BCAA MATRIX...", 32.99, null)
-)
-
-data class DummyCategory(val title: String, val icon: ImageVector)
-val categories = listOf(
-    DummyCategory("GEAR", Icons.Default.FitnessCenter),
-    DummyCategory("PROTEINS", Icons.Default.LocalDrink),
-    DummyCategory("APPAREL", Icons.Default.Checkroom)
-)
-// --------------------------------------
 
 @Composable
 fun HomeScreen(
@@ -68,6 +50,9 @@ fun HomeScreen(
     onNavigateToDetail: (String) -> Unit = {}
 ) {
     var searchQuery by remember { mutableStateOf("") }
+
+    val trendingProducts = remember { ProductRepository.getAllProducts() }
+
 
     // Usamos LazyVerticalGrid para manejar la cabecera completa y los productos en 2 columnas
     LazyVerticalGrid(
@@ -93,6 +78,7 @@ fun HomeScreen(
             PromoBanner()
         }
 
+        /*
         // 3. Categorías (Ocupa las 2 columnas)
         item(span = { GridItemSpan(2) }) {
             Column {
@@ -109,6 +95,7 @@ fun HomeScreen(
                 }
             }
         }
+        */
 
         // 4. Título de Tendencias (Ocupa las 2 columnas)
         item(span = { GridItemSpan(2) }) {
@@ -116,14 +103,16 @@ fun HomeScreen(
             SectionHeader(title = "TRENDING GEAR", actionText = null)
         }
 
-        // 5. Lista de Productos (Se distribuyen automáticamente en las 2 columnas)
-        items(trendingProducts) { product ->
+        items(trendingProducts) { item ->
             IronProductCard(
-                badgeText = product.badge,
-                category = product.category,
-                title = product.title,
-                price = product.price,
-                onAddToCart = { /* Lógica de agregar al carrito */ }
+                item = item,
+                badgeText = null,
+                onAddToCart = {
+                    CartRepository.addProductToCart(item)
+                              },
+                onClick = {
+                    onNavigateToDetail("${item.id}")
+                }
             )
         }
     }

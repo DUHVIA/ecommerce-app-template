@@ -1,5 +1,6 @@
 package com.example.ecommerce_template.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,20 +12,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,101 +36,89 @@ import androidx.compose.ui.unit.sp
 import com.example.ecommerce_template.ui.components.cart.CartItemCard
 import com.example.ecommerce_template.ui.components.core.PrimaryButton
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.ecommerce_template.data.cart.CartRepository
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
-
-// --- MOCK DATA PARA EL CARRITO ---
-data class DummyCartItem(
-    val id: String,
-    val category: String,
-    val title: String,
-    val variantDetails: String,
-    val price: Double,
-    var quantity: Int
-)
-
-val initialCartItems = listOf(
-    DummyCartItem("1", "PROTEIN", "ISO-CORE WHEY ELITE", "FLAVOR: DARK CHOCOLATE / 2.2KG", 79.99, 1),
-    DummyCartItem("2", "EQUIPMENT", "CORE-TECH PRO BELT", "SIZE: LARGE / MATTE BLACK", 124.50, 1),
-    DummyCartItem("3", "ENERGY", "IGNITION PRE-MAX", "FLAVOR: ELECTRIC LIME / 40 SERVINGS", 45.00, 1)
-)
-// ---------------------------------
 
 @Composable
 fun CartScreen(
     onNavigateToDetail: (String) -> Unit,
+    onCheckoutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Estado reactivo para la lista (permite simular que sumamos o restamos cantidades)
-    val cartItems = remember { mutableStateListOf(*initialCartItems.toTypedArray()) }
+    val cartItems = CartRepository.cartItems
+    val orderSummary = CartRepository.getOrderSummary()
 
-    val subtotal = cartItems.sumOf { it.price * it.quantity }
-    val taxes = subtotal * 0.08 // Simulación de 8% de impuestos
-    val total = subtotal + taxes
+    if (cartItems.isEmpty()) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = Icons.Default.AddShoppingCart,
+                contentDescription = "Carrito vacío",
+                modifier = Modifier
+                    .size(96.dp)
+                    .padding(bottom = 16.dp),
+                tint = Color.Gray
+            )
 
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
+            Text(
+                text = "Tu carrito está vacío,\n compra algo ...",
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Black),
+                color = Color.Gray
+            )
+        }
+    } else {
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
 
-        // Cabecera "MY ARSENAL"
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom
-            ) {
-                Text(
-                    text = "MY ARSENAL",
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black)
-                )
-                Text(
-                    text = "CONTINUE SHOPPING ->",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Gray
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Text(
+                        text = "MY ARSENAL",
+                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black)
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            items(cartItems) { item ->
+                CartItemCard(
+                    item = item,
+                    onIncrease = { CartRepository.addProductToCart(item.product) },
+                    onDecrease = { CartRepository.removeProductFromCart(item.product.id) },
+                    onClick = { onNavigateToDetail("${item.product.id}") }
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
-        }
 
-        // Lista de Productos en el carrito
-        items(cartItems) { item ->
-            CartItemCard(
-                category = item.category,
-                title = item.title,
-                variantDetails = item.variantDetails,
-                price = item.price,
-                quantity = item.quantity,
-                onIncrease = {
-                    val index = cartItems.indexOf(item)
-                    if (index != -1) cartItems[index] = item.copy(quantity = item.quantity + 1)
-                },
-                onDecrease = {
-                    val index = cartItems.indexOf(item)
-                    if (index != -1 && item.quantity > 1) {
-                        cartItems[index] = item.copy(quantity = item.quantity - 1)
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                OrderSummaryCard(
+                    subtotal = orderSummary.subtotal,
+                    taxes = orderSummary.taxes,
+                    total = orderSummary.total,
+                    onCheckoutClick = {
+                        onCheckoutClick()
                     }
-                },
-                onRemove = { cartItems.remove(item) },
-                onClick = { onNavigateToDetail(item.id) }
-            )
-        }
-
-        // Resumen de la Orden (Order Summary)
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-            OrderSummaryCard(
-                subtotal = subtotal,
-                taxes = taxes,
-                total = total,
-                onCheckoutClick = { /* Navegar al flujo de pago */ }
-            )
+                )
+            }
         }
     }
+
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun OrderSummaryCard(
     subtotal: Double,
@@ -151,7 +141,11 @@ fun OrderSummaryCard(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-            Divider(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f))
+            HorizontalDivider(
+                Modifier,
+                DividerDefaults.Thickness,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
             // Subtotal
@@ -159,14 +153,18 @@ fun OrderSummaryCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             // Shipping
-            SummaryRow(label = "Shipping", value = "Calculated at checkout")
+            SummaryRow(label = "Shipping", value = "EN CHECKOUT")
             Spacer(modifier = Modifier.height(12.dp))
 
             // Taxes
             SummaryRow(label = "Taxes", value = String.format("$%.2f", taxes))
 
             Spacer(modifier = Modifier.height(16.dp))
-            Divider(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f))
+            HorizontalDivider(
+                Modifier,
+                DividerDefaults.Thickness,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
             // Total
@@ -228,6 +226,9 @@ fun SummaryRow(label: String, value: String) {
 @Composable
 fun CartScreenPreview() {
     IronCoreTheme {
-        CartScreen(onNavigateToDetail = {})
+        CartScreen(
+            onNavigateToDetail = {},
+            onCheckoutClick =  {}
+        )
     }
 }

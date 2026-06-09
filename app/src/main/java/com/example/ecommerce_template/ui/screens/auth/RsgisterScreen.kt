@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,13 +39,16 @@ import com.example.ecommerce_template.ui.components.core.PrimaryButton
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
 
 @Composable
-fun LoginScreen(
-    onLoginSuccess: () -> Unit,
-    onRegisterClick: () -> Unit,
+fun RegisterScreen(
+    onRegisterSuccess: () -> Unit,
+    onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Estados para el registro
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
     val context = LocalContext.current
 
     Column(
@@ -55,9 +59,9 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Encabezado de Marca
+        // Encabezado temático
         Text(
-            text = "WELCOME TO",
+            text = "JOIN THE",
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.primary
         )
@@ -72,7 +76,22 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        // Input de Email (Reutilizando la base SOLID)
+        // Campo: Nombre Completo
+        IronTextFieldBase(
+            value = name,
+            onValueChange = { name = it },
+            placeholder = {
+                Text("FULL NAME", style = MaterialTheme.typography.labelLarge, color = Color.Gray)
+            },
+            leadingIcon = {
+                Icon(Icons.Default.Person, contentDescription = "User", tint = Color.Gray)
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Campo: Email
         IronTextFieldBase(
             value = email,
             onValueChange = { email = it },
@@ -87,57 +106,64 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Input de Contraseña (Componente especializado)
+        // Campo: Password
         IronPasswordField(
             value = password,
-            onValueChange = { password = it }
+            onValueChange = { password = it },
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Olvidé mi contraseña
-        Text(
-            text = "FORGOT PASSWORD?",
-            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-            color = Color.Gray,
-            modifier = Modifier
-                .align(Alignment.End)
-                .clickable { /* Lógica recuperar */ }
+        // Campo: Confirm Password
+        IronPasswordField(
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it }
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
         // Botón de Acción Principal
         PrimaryButton(
-            text = "START TRAINING",
+            text = "JOIN NOW",
             onClick = {
-                val success = UserRepository.login(email, password)
-
-                if (success) {
-                    onLoginSuccess()
-                } else {
-                    Toast.makeText(context, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
+                // 1. Validar que los campos no estén vacíos
+                if (name.isBlank() || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
+                    Toast.makeText(context, "Por favor completa todos los campos", Toast.LENGTH_SHORT).show()
+                    return@PrimaryButton
                 }
+
+                // 2. Validar que las contraseñas coincidan
+                if (password != confirmPassword) {
+                    Toast.makeText(context, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
+                    return@PrimaryButton
+                }
+
+                // 3. Registrar en el repositorio
+                UserRepository.register(name, email, password)
+
+                // 4. Feedback exitoso y navegación
+                Toast.makeText(context, "¡Bienvenido al Iron Core, $name!", Toast.LENGTH_SHORT).show()
+                onRegisterSuccess()
             }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Crear Cuenta
+        // Volver al Login
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "NEW TO IRON CORE? ",
+                text = "ALREADY AN ATHLETE? ",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray
             )
             Text(
-                text = "CREATE AN ACCOUNT",
+                text = "LOG IN",
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable { onRegisterClick() }
+                modifier = Modifier.clickable { onLoginClick() }
             )
         }
     }
@@ -145,8 +171,8 @@ fun LoginScreen(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun LoginScreenPreview() {
+fun RegisterScreenPreview() {
     IronCoreTheme {
-        LoginScreen(onLoginSuccess = {}, onRegisterClick = {})
+        RegisterScreen(onRegisterSuccess = {}, onLoginClick = {})
     }
 }
