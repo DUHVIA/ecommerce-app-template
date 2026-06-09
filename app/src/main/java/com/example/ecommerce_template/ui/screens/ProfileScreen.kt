@@ -9,6 +9,8 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,15 +22,15 @@ import androidx.compose.ui.unit.dp
 import com.example.ecommerce_template.data.auth.UserRepository
 import com.example.ecommerce_template.ui.components.core.PrimaryButton
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
+import com.example.ecommerce_template.ui.viewModel.AuthViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    onBackClick: () -> Unit,
     onLogout: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: AuthViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
-    val user = UserRepository.getCurrentUserProfile()
+    val profileUiState by viewModel.profileState.collectAsState()
 
     Column(
         modifier = modifier
@@ -57,42 +59,38 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Nombre y Estado (Personalizado)
+        // Nombre y Estado conectados al UiState
         Text(
-            text = user?.name ?: "",
+            text = profileUiState.name,
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black),
             color = MaterialTheme.colorScheme.onBackground
         )
         Text(
-            text = user?.email ?: "",
+            text = profileUiState.email,
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.height(48.dp))
 
-
         Spacer(modifier = Modifier.weight(1f))
 
         PrimaryButton(
-            text = "LOG OUT",
+            text = if (profileUiState.isLoading) "LOGGING OUT..." else "LOG OUT",
             onClick = {
-                UserRepository.logout()
-                onLogout()
+                viewModel.logout(onLogoutSuccess = onLogout)
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !profileUiState.isLoading
         )
-
     }
 }
-
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ProfileScreenPreview() {
     IronCoreTheme {
         ProfileScreen(
-            onBackClick = {},
             onLogout = {}
         )
     }

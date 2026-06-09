@@ -148,7 +148,6 @@ fun AppNavigation() {
 
             composable(Routes.PROFILE) {
                 ProfileScreen(
-                    onBackClick = { navController.popBackStack() },
                     onLogout = { navigateTo(Routes.LOGIN) }
                 )
             }

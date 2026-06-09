@@ -1,19 +1,16 @@
 package com.example.ecommerce_template.data.auth
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 object UserRepository {
 
-    // 1. Lista de todos los usuarios registrados
     private val _registeredUsers = mutableStateListOf<User>()
 
-    // 2. Estado del usuario actual (quien ha iniciado sesión)
-    private var _currentUser by mutableStateOf<User?>(null)
-
-    val currentUser: User? get() = _currentUser
+    private val _currentUser = MutableStateFlow<User?>(null)
+    val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
 
     init {
         _registeredUsers.add(
@@ -26,7 +23,6 @@ object UserRepository {
         )
     }
 
-    // Registro: Agrega un usuario a la lista y lo loguea automáticamente
     fun register(name: String, email: String, password: String) {
         val newUser = User(
             id = "USR-${System.currentTimeMillis()}",
@@ -34,30 +30,33 @@ object UserRepository {
             email = email,
             password = password
         )
+
         _registeredUsers.add(newUser)
-        _currentUser = newUser
+        _currentUser.value = newUser
     }
 
-    // Login: Busca en la lista de registrados
     fun login(email: String, password: String): Boolean {
-        val user = _registeredUsers.find { it.email == email && it.password == password }
-        if (user != null) {
-            _currentUser = user
-            return true
+        val user = _registeredUsers.find {
+            it.email == email && it.password == password
         }
-        return false
+
+        return if (user != null) {
+            _currentUser.value = user
+            true
+        } else {
+            false
+        }
     }
 
-    // Logout
     fun logout() {
-        _currentUser = null
+        _currentUser.value = null
     }
 
     fun getCurrentUserProfile(): UserPublicProfile? {
-        return _currentUser?.let {
+        return _currentUser.value?.let { user ->
             UserPublicProfile(
-                name = it.name,
-                email = it.email
+                name = user.name,
+                email = user.email
             )
         }
     }

@@ -18,6 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,11 +37,12 @@ import com.example.ecommerce_template.ui.viewModel.AuthViewModel
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-
     onLoginSuccess: () -> Unit,
     onRegisterClick: () -> Unit,
     viewModel: AuthViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
+    val loginUiState by viewModel.loginState.collectAsState()
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -48,7 +51,7 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 1. ENCABEZADO
+        // ENCABEZADO
         Text(
             text = "WELCOME TO",
             style = MaterialTheme.typography.labelSmall,
@@ -65,9 +68,9 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        // 2. INPUTS DE CORREO Y CONTRASEÑA
+        // 2. INPUTS CONECTADOS AL UISTATE
         IronTextFieldBase(
-            value = viewModel.email,
+            value = loginUiState.email, // Usa el estado recolectado
             onValueChange = { viewModel.onEmailChange(it) },
             placeholder = {
                 Text("EMAIL ADDRESS", style = MaterialTheme.typography.labelLarge, color = Color.Gray)
@@ -75,25 +78,24 @@ fun LoginScreen(
             leadingIcon = {
                 Icon(Icons.Default.Email, contentDescription = "Email", tint = Color.Gray)
             },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         IronPasswordField(
-            value = viewModel.password,
-            onValueChange = { viewModel.onPasswordChange(it) }
+            value = loginUiState.password, // Usa el estado recolectado
+            onValueChange = { viewModel.onPasswordChange(it) },
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // (¡) MOSTAR ERROR EN LOGIN
-        if (viewModel.loginError != null) {
+        // MOSTRAR ERROR DESDE EL UISTATE
+        if (loginUiState.loginError != null) {
             Text(
-                text = viewModel.loginError!!,
+                text = loginUiState.loginError!!,
                 color = MaterialTheme.colorScheme.onErrorContainer,
                 modifier = Modifier
-                    .padding(top = 8.dp)
                     .background(
                         color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f),
                         shape = RoundedCornerShape(16.dp)
@@ -103,10 +105,11 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(32.dp))
         }
 
-        // 3.BOTÓN DE LOGIN
+        // 3. BOTÓN DE LOGIN CON MANEJO DE LOADING
         PrimaryButton(
-            text = "START TRAINING",
-            onClick = { viewModel.login(onSuccess = onLoginSuccess) }
+            text = if (loginUiState.isLoading) "LOADING..." else "START TRAINING",
+            onClick = { viewModel.login(onSuccess = onLoginSuccess) },
+            enabled = !loginUiState.isLoading // Evita clicks dobles mientras simula el delay
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -125,7 +128,7 @@ fun LoginScreen(
                 text = "CREATE AN ACCOUNT",
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable { onRegisterClick() }
+                modifier = Modifier.clickable(enabled = !loginUiState.isLoading) { onRegisterClick() }
             )
         }
     }
