@@ -21,6 +21,14 @@ object UserRepository {
                 password = "admin"
             )
         )
+        _registeredUsers.add(
+            User(
+                id = "DEFAULT-002",
+                name = "Diego Nina",
+                email = "dninas",
+                password = "admin"
+            )
+        )
     }
 
     fun register(name: String, email: String, password: String) {
