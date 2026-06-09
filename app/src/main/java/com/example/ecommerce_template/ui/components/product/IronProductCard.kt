@@ -30,16 +30,101 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.ecommerce_template.ui.theme.IronCoreTheme
 
+//SOLID APPLIED
+// 1. Componente de Etiqueta (SRP: Solo dibuja el rectangulito de color con texto)
+@Composable
+fun IronBadge(
+    text: String,
+    color: Color = MaterialTheme.colorScheme.primary,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelSmall.copy(color = Color.Black),
+        modifier = modifier
+            .background(color, RoundedCornerShape(2.dp))
+            .padding(horizontal = 6.dp, vertical = 2.dp)
+    )
+}
+
+// 2. Componente de Imagen (SRP: Maneja el contenedor cuadrado y acepta una etiqueta superpuesta vía Slot - OCP)
+@Composable
+fun IronProductImage(
+    modifier: Modifier = Modifier,
+    badgeSlot: @Composable (() -> Unit)? = null
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(1f) // Cuadrado perfecto
+            .background(Color(0xFF0F0F0F), RoundedCornerShape(4.dp))
+    ) {
+        // Aquí irá AsyncImage(model = url...) cuando conectemos la API
+
+        if (badgeSlot != null) {
+            Box(modifier = Modifier.padding(8.dp)) {
+                badgeSlot()
+            }
+        }
+    }
+}
+
+// 3. Componente de Textos (SRP: Maneja la jerarquía tipográfica del producto)
+@Composable
+fun IronProductInfo(
+    category: String,
+    title: String,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = category.uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = Color.Gray
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = title.uppercase(),
+            style = MaterialTheme.typography.titleMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+// 4. Componente de Acción Rápida (SRP: Solo el botón circular de añadir)
+@Composable
+fun IronAddToCartButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier.size(36.dp),
+        colors = IconButtonDefaults.iconButtonColors(
+            containerColor = Color(0xFF333333),
+            contentColor = Color.White
+        )
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.ShoppingCart,
+            contentDescription = "Añadir",
+            modifier = Modifier.size(18.dp)
+        )
+    }
+}
+
+// 5. El Orquestador Principal (OCP: Usa los componentes anteriores para ensamblar la tarjeta)
 @Composable
 fun IronProductCard(
-    badgeText: String?,
-    badgeColor: Color = MaterialTheme.colorScheme.primary,
     category: String,
     title: String,
     price: Double,
     onAddToCart: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    badgeText: String? = null
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -49,44 +134,22 @@ fun IronProductCard(
         )
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .background(Color(0xFF0F0F0F), RoundedCornerShape(4.dp))
-            ) {
 
-                if (badgeText != null) {
-                    Text(
-                        text = badgeText,
-                        style = MaterialTheme.typography.labelSmall.copy(color = Color.Black),
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .background(badgeColor, RoundedCornerShape(2.dp))
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                    )
-                }
-            }
+            // Slot 1: Imagen + Etiqueta opcional
+            IronProductImage(
+                badgeSlot = if (badgeText != null) {
+                    { IronBadge(text = badgeText) }
+                } else null
+            )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                text = category.uppercase(),
-                style = MaterialTheme.typography.labelSmall,
-                color = Color.Gray
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = title.uppercase(),
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            // Slot 2: Información del producto
+            IronProductInfo(category = category, title = title)
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Slot 3: Precio y Botón alineados
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -96,21 +159,7 @@ fun IronProductCard(
                     text = "$$price",
                     style = MaterialTheme.typography.labelLarge
                 )
-
-                IconButton(
-                    onClick = onAddToCart,
-                    modifier = Modifier.size(36.dp),
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = Color(0xFF333333),
-                        contentColor = Color.White
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.ShoppingCart,
-                        contentDescription = "Añadir",
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
+                IronAddToCartButton(onClick = onAddToCart)
             }
         }
     }
@@ -119,7 +168,7 @@ fun IronProductCard(
 @Preview(name = "Light Mode", showBackground = true)
 @Composable
 fun IronProductCardPreview() {
-    MaterialTheme {
+    IronCoreTheme {
         Surface(modifier = Modifier.padding(16.dp)) {
             IronProductCard(
                 badgeText = "NEW",

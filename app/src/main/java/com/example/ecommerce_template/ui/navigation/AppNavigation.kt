@@ -20,6 +20,8 @@ import com.example.ecommerce_template.ui.screens.PurchaseHistoryScreen
 import com.example.ecommerce_template.ui.components.core.IronBottomBar
 import com.example.ecommerce_template.ui.components.core.IronCoreTopBar
 import com.example.ecommerce_template.ui.components.core.IronNavItem
+import com.example.ecommerce_template.ui.components.core.IronTopBarCartAction
+import com.example.ecommerce_template.ui.components.core.IronTopBarNavigationIcon
 import com.example.ecommerce_template.ui.screens.LoginScreen
 
 val BottomNavItems = listOf(
@@ -38,10 +40,23 @@ fun AppNavigation() {
 
     Scaffold(
         topBar = {
-            IronCoreTopBar(
-                onMenuClick = { /* Abrir drawer en el futuro */ },
-                onCartClick = { navController.navigate(Routes.CART) }
-            )
+            // Ocultamos el TopBar en el Login, lo mostramos en el resto
+            if (currentRoute != Routes.LOGIN) {
+                IronCoreTopBar(
+                    // 1. Inyectamos el ícono de navegación (Menú)
+                    navigationIcon = {
+                        IronTopBarNavigationIcon(
+                            onClick = { /* Abrir drawer en el futuro */ }
+                        )
+                    },
+                    // 2. Inyectamos las acciones de la derecha (Carrito)
+                    actions = {
+                        IronTopBarCartAction(
+                            onClick = { navController.navigate(Routes.CART) }
+                        )
+                    }
+                )
+            }
         },
         bottomBar = {
             if (showBottomBar) {
