@@ -1,6 +1,5 @@
 package com.example.ecommerce_template.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,36 +14,34 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddShoppingCart
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.ShoppingBag
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ecommerce_template.data.order.OrderRepository
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ecommerce_template.ui.components.profile.OrderHistoryCard
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
-
+import com.example.ecommerce_template.ui.viewModel.OrderHistoryViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun PurchaseHistoryScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    orderHistoryViewModel: OrderHistoryViewModel = viewModel()
 ) {
-    val orderHistoryList = OrderRepository.orderHistory
+    val uiState by orderHistoryViewModel.uiState.collectAsStateWithLifecycle()
 
-    if (orderHistoryList.isEmpty()) {
+    if (uiState.isEmpty) {
         Column(
             modifier = modifier
                 .fillMaxSize()
@@ -93,7 +90,7 @@ fun PurchaseHistoryScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            items(orderHistoryList) { order ->
+            items(uiState.orders) { order ->
                 OrderHistoryCard(
                     order = order,
                     onReorderClick = {},

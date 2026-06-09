@@ -1,18 +1,13 @@
 package com.example.ecommerce_template.ui.screens
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ecommerce_template.data.cart.CartRepository
-import com.example.ecommerce_template.data.checkOut.CheckoutRepository
-import com.example.ecommerce_template.data.order.OrderRepository
 import com.example.ecommerce_template.ui.components.core.PrimaryButton
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,17 +17,20 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.ecommerce_template.ui.viewModel.CheckoutViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckoutScreen(
+    modifier: Modifier = Modifier,
     onOrderPlaced: () -> Unit,
-    onBackClick: () -> Unit, // Añadido para la navegación
-    modifier: Modifier = Modifier
+    onBackClick: () -> Unit,
+    checkoutViewModel: CheckoutViewModel = viewModel()
+
 ) {
-    val summary = remember { CheckoutRepository.prepareSummary() }
-    val order = OrderRepository
-    val context = LocalContext.current
+    val uiState by checkoutViewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -53,7 +51,7 @@ fun CheckoutScreen(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(innerPadding) // Aplica el espacio de la TopBar
+                .padding(innerPadding)
                 .padding(24.dp)
         ) {
             Text(
@@ -68,8 +66,12 @@ fun CheckoutScreen(
             Text(text = "ORDER SUMMARY", style = MaterialTheme.typography.titleMedium, color = Color.Gray)
             Spacer(modifier = Modifier.height(16.dp))
 
-            summary.items.forEach { item ->
-                Text(text = item, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
+            uiState.items.forEach { item ->
+                Text(
+                    text = item,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -77,9 +79,9 @@ fun CheckoutScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Precios
-            PriceRow("Subtotal", summary.subtotal)
-            PriceRow("Taxes (18%)", summary.taxes)
-            PriceRow("Shipping", summary.shipping)
+            PriceRow("Subtotal", uiState.subtotal)
+            PriceRow("Taxes (18%)", uiState.taxes)
+            PriceRow("Shipping", uiState.shipping)
 
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
@@ -97,22 +99,17 @@ fun CheckoutScreen(
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
-                    text = "S/ ${"%.2f".format(summary.total)}",
-                    style = MaterialTheme.typography.titleLarge,
+                    text = "S/ ${"%.2f".format(uiState.total)}",                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Black,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
 
-            // Botón de confirmación
             PrimaryButton(
                 text = "CONFIRM PURCHASE",
                 onClick = {
-                    order.addOrder(CheckoutRepository.prepareSummary())
-                    CartRepository.clearCart()
-                    Toast.makeText(context, "Orden hecha", Toast.LENGTH_SHORT).show()
-                    onOrderPlaced()
+                    checkoutViewModel.confirmPurchase(onOrderPlaced)
                 },
                 modifier = Modifier.fillMaxWidth()
             )

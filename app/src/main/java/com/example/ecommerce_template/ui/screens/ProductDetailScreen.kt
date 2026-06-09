@@ -38,8 +38,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ecommerce_template.data.product.ProductRepository
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
+import com.example.ecommerce_template.ui.viewModel.ProductViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,8 +48,9 @@ fun ProductDetailScreen(
     productId: Int,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
+    productViewModel: ProductViewModel = viewModel()
 ) {
-    val product = ProductRepository.getProductById(productId)
+    val product = productViewModel.getProductById(productId)
     if (product == null) {
         Text("Producto no encontrado")
         return
