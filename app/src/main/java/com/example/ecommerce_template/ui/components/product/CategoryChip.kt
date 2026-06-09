@@ -36,9 +36,9 @@ import com.example.ecommerce_template.ui.theme.IronCoreTheme
 // 1. Componente del Ícono (SRP: Solo define cómo se ve el ícono en los chips)
 @Composable
 fun CategoryChipIcon(
+    modifier: Modifier = Modifier,
     icon: ImageVector,
     contentDescription: String? = null,
-    modifier: Modifier = Modifier
 ) {
     Icon(
         imageVector = icon,

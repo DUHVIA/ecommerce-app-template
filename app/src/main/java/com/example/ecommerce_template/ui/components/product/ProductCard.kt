@@ -40,9 +40,9 @@ fun ProductCardTitle(
 // 2. Componente de Precio (SRP: Maneja la lógica de la moneda y el estilo del precio)
 @Composable
 fun ProductCardPrice(
+    modifier: Modifier = Modifier,
     precio: Double,
-    moneda: String = "S/",
-    modifier: Modifier = Modifier
+    moneda: String = "S/"
 ) {
     Text(
         text = "$moneda $precio",

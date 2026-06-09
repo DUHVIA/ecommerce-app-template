@@ -1,6 +1,5 @@
 package com.example.ecommerce_template.ui.components.core
 
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.ShoppingCart
