@@ -12,17 +12,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FitnessCenter
-import androidx.compose.material.icons.filled.LocalDrink
-import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,28 +27,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.ecommerce_template.ui.components.core.IronSearchBar
-//import com.example.ecommerce_template.ui.components.product.CategoryChip
 import com.example.ecommerce_template.ui.components.product.IronProductCard
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ecommerce_template.data.cart.CartRepository
-import com.example.ecommerce_template.data.product.ProductRepository
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
+import com.example.ecommerce_template.ui.viewModel.HomeViewModel
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onNavigateToDetail: (String) -> Unit = {}
+    onNavigateToDetail: (String) -> Unit = {},
+    homeViewModel: HomeViewModel = viewModel()
 ) {
+
     var searchQuery by remember { mutableStateOf("") }
 
-    val trendingProducts = remember { ProductRepository.getAllProducts() }
+    val products by homeViewModel.products.collectAsStateWithLifecycle()
 
-
-    // Usamos LazyVerticalGrid para manejar la cabecera completa y los productos en 2 columnas
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = modifier
@@ -65,7 +59,6 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        // 1. Buscador (Ocupa las 2 columnas)
         item(span = { GridItemSpan(2) }) {
             IronSearchBar(
                 value = searchQuery,
@@ -73,52 +66,35 @@ fun HomeScreen(
             )
         }
 
-        // 2. Banner Promocional (Ocupa las 2 columnas)
         item(span = { GridItemSpan(2) }) {
             PromoBanner()
         }
 
-        /*
-        // 3. Categorías (Ocupa las 2 columnas)
-        item(span = { GridItemSpan(2) }) {
-            Column {
-                SectionHeader(title = "CATEGORIES", actionText = "VIEW ALL")
-                Spacer(modifier = Modifier.height(12.dp))
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(categories) { cat ->
-                        CategoryChip(
-                            title = cat.title,
-                            icon = cat.icon,
-                            onClick = { /* Filtrar categoría */ }
-                        )
-                    }
-                }
-            }
-        }
-        */
-
-        // 4. Título de Tendencias (Ocupa las 2 columnas)
         item(span = { GridItemSpan(2) }) {
             Spacer(modifier = Modifier.height(8.dp))
-            SectionHeader(title = "TRENDING GEAR", actionText = null)
+            SectionHeader(
+                title = "TRENDING GEAR",
+                actionText = null
+            )
         }
 
-        items(trendingProducts) { item ->
+        items(products) { item ->
+
             IronProductCard(
                 item = item,
                 badgeText = null,
                 onAddToCart = {
                     CartRepository.addProductToCart(item)
-                              },
+                },
                 onClick = {
-                    onNavigateToDetail("${item.id}")
+                    onNavigateToDetail(item.id.toString())
                 }
             )
+
         }
     }
 }
-
-// Componente extra para el título de las secciones ("CATEGORIES", "TRENDING GEAR")
+// Componente extra para el título de las secciones
 @Composable
 fun SectionHeader(title: String, actionText: String?) {
     Row(
@@ -178,3 +154,22 @@ fun HomeScreenPreview() {
         HomeScreen()
     }
 }
+
+
+/*
+item(span = { GridItemSpan(2) }) {
+    Column {
+        SectionHeader(title = "CATEGORIES", actionText = "VIEW ALL")
+        Spacer(modifier = Modifier.height(12.dp))
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            items(categories) { cat ->
+                CategoryChip(
+                    title = cat.title,
+                    icon = cat.icon,
+                    onClick = { /* Filtrar categoría */ }
+                )
+            }
+        }
+    }
+}
+*/

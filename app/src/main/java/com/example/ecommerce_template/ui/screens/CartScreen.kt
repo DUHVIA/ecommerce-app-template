@@ -27,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,19 +37,23 @@ import androidx.compose.ui.unit.sp
 import com.example.ecommerce_template.ui.components.cart.CartItemCard
 import com.example.ecommerce_template.ui.components.core.PrimaryButton
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.ecommerce_template.data.cart.CartRepository
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
+import com.example.ecommerce_template.ui.viewModel.CartViewModel
 
 @Composable
 fun CartScreen(
     onNavigateToDetail: (String) -> Unit,
     onCheckoutClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    cartViewModel: CartViewModel = viewModel()
 ) {
-    val cartItems = CartRepository.cartItems
-    val orderSummary = CartRepository.getOrderSummary()
 
-    if (cartItems.isEmpty()) {
+    val uiState by cartViewModel.uiState.collectAsStateWithLifecycle()
+
+    if (uiState.isEmpty) {
+
         Column(
             modifier = modifier
                 .fillMaxSize()
@@ -56,6 +61,7 @@ fun CartScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             Icon(
                 imageVector = Icons.Default.AddShoppingCart,
                 contentDescription = "Carrito vacío",
@@ -67,11 +73,15 @@ fun CartScreen(
 
             Text(
                 text = "Tu carrito está vacío,\n compra algo ...",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Black),
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Black
+                ),
                 color = Color.Gray
             )
         }
+
     } else {
+
         LazyColumn(
             modifier = modifier
                 .fillMaxSize()
@@ -81,41 +91,60 @@ fun CartScreen(
         ) {
 
             item {
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Bottom
                 ) {
+
                     Text(
                         text = "MY ARSENAL",
-                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black)
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = FontWeight.Black
+                        )
                     )
                 }
+
                 Spacer(modifier = Modifier.height(8.dp))
             }
-            items(cartItems) { item ->
+
+            items(uiState.items) { item ->
+
                 CartItemCard(
                     item = item,
-                    onIncrease = { CartRepository.addProductToCart(item.product) },
-                    onDecrease = { CartRepository.removeProductFromCart(item.product.id) },
-                    onClick = { onNavigateToDetail("${item.product.id}") }
+
+                    onIncrease = {
+                        cartViewModel.addProduct(item.product)
+                    },
+
+                    onDecrease = {
+                        cartViewModel.removeProduct(
+                            item.product.id
+                        )
+                    },
+
+                    onClick = {
+                        onNavigateToDetail(
+                            item.product.id.toString()
+                        )
+                    }
                 )
             }
 
             item {
+
                 Spacer(modifier = Modifier.height(16.dp))
+
                 OrderSummaryCard(
-                    subtotal = orderSummary.subtotal,
-                    taxes = orderSummary.taxes,
-                    total = orderSummary.total,
-                    onCheckoutClick = {
-                        onCheckoutClick()
-                    }
+                    subtotal = uiState.subtotal,
+                    taxes = uiState.taxes,
+                    total = uiState.total,
+                    onCheckoutClick = onCheckoutClick
                 )
             }
         }
     }
-
 }
 
 @SuppressLint("DefaultLocale")

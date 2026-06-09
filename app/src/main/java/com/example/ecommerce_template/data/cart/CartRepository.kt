@@ -1,49 +1,82 @@
 package com.example.ecommerce_template.data.cart
 
-import androidx.compose.runtime.mutableStateListOf
 import com.example.ecommerce_template.data.product.Product
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 object CartRepository {
 
-    // Usamos mutableStateListOf para que Compose detecte cambios automáticamente
-    private val _cartList = mutableStateListOf<CartItem>()
+    private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
+    val cartItems: StateFlow<List<CartItem>> = _cartItems.asStateFlow()
 
-    // Exponemos una lista de solo lectura hacia afuera
-    val cartItems: List<CartItem> get() = _cartList
-
-    // 2. Añadir un producto al carrito
     fun addProductToCart(product: Product) {
-        val existingItem = _cartList.find { it.product.id == product.id }
 
-        if (existingItem != null) {
-            val index = _cartList.indexOf(existingItem)
-            _cartList[index] = existingItem.copy(quantity = existingItem.quantity + 1)
-        } else {
-            _cartList.add(CartItem(product = product, quantity = 1))
-        }
-    }
+        val currentItems = _cartItems.value
 
-    // 3. Remover o disminuir la cantidad de un producto
-    fun removeProductFromCart(productId: Int) {
-        val existingItem = _cartList.find { it.product.id == productId }
+        val existingItem =
+            currentItems.find { it.product.id == product.id }
 
-        if (existingItem != null) {
-            if (existingItem.quantity > 1) {
-                val index = _cartList.indexOf(existingItem)
-                _cartList[index] = existingItem.copy(quantity = existingItem.quantity - 1)
+        _cartItems.value =
+            if (existingItem != null) {
+
+                currentItems.map {
+                    if (it.product.id == product.id) {
+                        it.copy(quantity = it.quantity + 1)
+                    } else {
+                        it
+                    }
+                }
+
             } else {
-                _cartList.remove(existingItem)
+
+                currentItems + CartItem(
+                    product = product,
+                    quantity = 1
+                )
             }
+    }
+
+    fun removeProductFromCart(productId: Int) {
+
+        val currentItems = _cartItems.value
+
+        val existingItem =
+            currentItems.find { it.product.id == productId }
+
+        if (existingItem == null) return
+
+        _cartItems.value =
+            if (existingItem.quantity > 1) {
+
+                currentItems.map {
+                    if (it.product.id == productId) {
+                        it.copy(quantity = it.quantity - 1)
+                    } else {
+                        it
+                    }
+                }
+
+            } else {
+
+                currentItems.filter {
+                    it.product.id != productId
+                }
+            }
+    }
+
+    fun clearCart() {
+        _cartItems.value = emptyList()
+    }
+
+    fun calculateTotal(): Double {
+        return _cartItems.value.sumOf {
+            it.product.price * it.quantity
         }
     }
 
-    // 4. Calcular el precio total
-    fun calculateTotal(): Double {
-        return _cartList.sumOf { it.product.price * it.quantity }
-    }
-
-    // 5. Resumen del checkout del carrito
     fun getOrderSummary(): OrderSummary {
+
         val subtotal = calculateTotal()
         val taxes = subtotal * 0.18
 
@@ -52,10 +85,5 @@ object CartRepository {
             taxes = taxes,
             total = subtotal + taxes
         )
-    }
-
-    // 6. Nueva función para limpiar el carrito
-    fun clearCart() {
-        _cartList.clear()
     }
 }

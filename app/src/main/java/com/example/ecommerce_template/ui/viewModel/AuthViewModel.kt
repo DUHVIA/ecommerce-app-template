@@ -65,6 +65,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    // LOGIN (Operaciones)
     fun onEmailChange(newEmail: String) {
         _loginState.update {
             it.copy(email = newEmail, loginError = null)
@@ -85,7 +86,7 @@ class AuthViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
-            delay(2000)
+            //delay(2000)
 
             val success = UserRepository.login(
                 currentState.email,
@@ -109,6 +110,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    // REGISTER (Operaciones)
     fun onRegisterNameChange(newName: String) {
         _registerState.update {
             it.copy(name = newName, errorMessage = null)
@@ -164,6 +166,7 @@ class AuthViewModel : ViewModel() {
         onSuccess()
     }
 
+    // PROFILE (Operaciones)
     fun logout(onLogoutSuccess: () -> Unit) {
 
         UserRepository.logout()
