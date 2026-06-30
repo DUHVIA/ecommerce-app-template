@@ -22,7 +22,8 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
-
+import androidx.room.Room
+import com.example.ecommerce_template.data.local.database.AppDatabase
 val appModule = module {
     // Utilidades
     single { SessionManager() }
@@ -53,8 +54,18 @@ val appModule = module {
     single { get<Retrofit>().create(IronCoreApiService::class.java) }
 
     // Repositorios
-    single { ProductRepository(get(), get()) }
+    single { ProductRepository(get(), get(), get()) }
     single { UserRepository(get(), get()) }
+
+    // Base de datos (Room)
+    single {
+        Room.databaseBuilder(
+            androidContext(),
+            AppDatabase::class.java,
+            "ironcore_db"
+        ).fallbackToDestructiveMigration().build()
+    }
+    single { get<AppDatabase>().productDao() }
 
     // ViewModels
     viewModel { ProductViewModel(get()) }
