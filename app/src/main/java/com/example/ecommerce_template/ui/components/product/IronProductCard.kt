@@ -136,7 +136,7 @@ fun IronProductCardPreview() {
         Surface(modifier = Modifier.padding(16.dp)) {
             IronProductCard(
                 item = Product(
-                    id = 5,
+                    id = "5",
                     name = "Shaker / Mezclador Pro 600ml",
                     description = "Vaso mezclador con compartimento para pastillas y polvo. Libre de BPA.",
                     price = 25.00,

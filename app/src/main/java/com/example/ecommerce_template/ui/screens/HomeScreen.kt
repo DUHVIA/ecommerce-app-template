@@ -37,16 +37,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ecommerce_template.data.cart.CartRepository
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
 import com.example.ecommerce_template.ui.viewModel.ProductViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onNavigateToDetail: (String) -> Unit = {},
-    productViewModel: ProductViewModel = viewModel()
+    //productViewModel: ProductViewModel = viewModel()
+    productViewModel: ProductViewModel = koinViewModel()
 ) {
 
     var searchQuery by remember { mutableStateOf("") }
 
+    //val products by productViewModel.products.collectAsStateWithLifecycle()
     val products by productViewModel.products.collectAsStateWithLifecycle()
 
     LazyVerticalGrid(

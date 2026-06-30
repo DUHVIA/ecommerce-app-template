@@ -45,7 +45,7 @@ import com.example.ecommerce_template.ui.viewModel.ProductViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(
-    productId: Int,
+    productId: String,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     productViewModel: ProductViewModel = viewModel()
@@ -155,7 +155,7 @@ fun ProductDetailScreen(
 fun ProductDetailScreenPreview() {
     IronCoreTheme {
         ProductDetailScreen(
-            productId = 1
+            productId = "1"
         )
     }
 }

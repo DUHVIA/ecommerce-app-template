@@ -1,60 +1,47 @@
 package com.example.ecommerce_template.data.product
 
 import com.example.ecommerce_template.R
+import com.example.ecommerce_template.data.network.IronCoreApiService
+import com.example.ecommerce_template.data.utils.SearchLogger
 
-object ProductRepository {
+class ProductRepository(
+    private val apiService: IronCoreApiService,
+    private val logger: SearchLogger
+) {
 
-    private val mockProducts = listOf(
-        Product(
-            id = 1,
-            name = "Proteína Whey Gold Standard 2lb",
-            description = "Aislado de proteína de suero de leche, 24g de proteína por servicio. Sabor Chocolate.",
-            price = 149.90,
-            category = "Suplementos",
-            imageRes = R.drawable.prod_proteina,
-            stock = 15
-        ),
-        Product(
-            id = 2,
-            name = "Creatina Monohidratada 300g",
-            description = "Creatina micronizada pura para mejorar la fuerza y el rendimiento muscular. Sin sabor.",
-            price = 89.00,
-            category = "Suplementos",
-            imageRes = R.drawable.prod_creatina,
-            stock = 20
-        ),
-        Product(
-            id = 3,
-            name = "Cinturón de Cuero para Powerlifting",
-            description = "Cinturón de soporte lumbar de alta resistencia, 10mm de grosor con hebilla de acero.",
-            price = 120.00,
-            category = "Accesorios",
-            imageRes = R.drawable.prod_cinturon,
-            stock = 5
-        ),
-        Product(
-            id = 4,
-            name = "Mancuernas Hexagonales 10kg (Par)",
-            description = "Mancuernas de caucho de alta calidad con mango cromado ergonómico y antideslizante.",
-            price = 160.00,
-            category = "Equipamiento",
-            imageRes = R.drawable.prod_mancuerna,
-            stock = 8
-        ),
-        Product(
-            id = 5,
-            name = "Shaker / Mezclador Pro 600ml",
-            description = "Vaso mezclador con compartimento para pastillas y polvo. Libre de BPA.",
-            price = 25.00,
-            category = "Accesorios",
-            imageRes = R.drawable.prod_shaker,
-            stock = 50
-        )
-    )
+    suspend fun getAllProducts(): Result<List<Product>> {
+        logger.saveSearch("Consulta General de Catálogo API")
+        
+        return try {
+            val response = apiService.getProducts(page = 1, size = 100)
+            if (response.isSuccessful && response.body() != null) {
+                val apiProducts = response.body()!!.items
+                
+                val domainProducts = apiProducts.map { apiProd ->
+                    Product(
+                        id = apiProd.id,
+                        name = apiProd.name,
+                        description = apiProd.description ?: "",
+                        price = apiProd.price,
+                        category = apiProd.categoryName,
+                        imageRes = R.drawable.prod_shaker, // Placeholder
+                        imageUrl = apiProd.imageUrl,
+                        stock = apiProd.stock
+                    )
+                }
+                Result.success(domainProducts)
+            } else {
+                Result.failure(Exception("Error fetching products: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
+    }
 
-    fun getAllProducts(): List<Product> = mockProducts
-
-    fun getProductById(id: Int): Product? = mockProducts.find { it.id == id }
-
-    fun getProductsByCategory(category: String): List<Product> = mockProducts.filter { it.category == category }
+    suspend fun getProductById(id: String): Result<Product?> {
+        // En una app real haríamos un GET /api/v1/products/{id}
+        // Para este demo, reutilizamos el listado o asumimos que se llamará getAllProducts
+        return Result.failure(NotImplementedError("Implement GET by ID api call if needed"))
+    }
 }

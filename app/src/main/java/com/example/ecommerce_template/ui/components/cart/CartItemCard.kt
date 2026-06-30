@@ -51,7 +51,7 @@ fun CartItemCard(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)),q
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.background
         )
@@ -193,7 +193,7 @@ fun CartItemCardPreview() {
             CartItemCard(
                 item = CartItem(
                     product = Product(
-                        id = 1,
+                        id = "1",
                         category = "PROTEIN",
                         name = "ISO-CORE WHEY ELITE",
                         description = "FLAVOR: DARK CHOCOLATE / 2.2KG",

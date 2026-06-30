@@ -37,7 +37,7 @@ object CartRepository {
             }
     }
 
-    fun removeProductFromCart(productId: Int) {
+    fun removeProductFromCart(productId: String) {
 
         val currentItems = _cartItems.value
 

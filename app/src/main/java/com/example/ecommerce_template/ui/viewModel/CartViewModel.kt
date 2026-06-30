@@ -53,7 +53,7 @@ class CartViewModel : ViewModel() {
         CartRepository.addProductToCart(product)
     }
 
-    fun removeProduct(productId: Int) {
+    fun removeProduct(productId: String) {
         CartRepository.removeProductFromCart(productId)
     }
 

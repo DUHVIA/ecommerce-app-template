@@ -34,7 +34,9 @@ data class ProfileUiState(
     val isLoading: Boolean = false
 )
 
-class AuthViewModel : ViewModel() {
+class AuthViewModel(
+    private val userRepository: UserRepository
+) : ViewModel() {
 
     // LOGIN
 
@@ -53,7 +55,7 @@ class AuthViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            UserRepository.currentUser.collect { user ->
+            userRepository.currentUser.collect { user ->
 
                 _profileState.value = ProfileUiState(
                     name = user?.name ?: "Usuario Desconocido",
@@ -86,25 +88,23 @@ class AuthViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
-            //delay(2000)
-
-            val success = UserRepository.login(
+            val result = userRepository.login(
                 currentState.email,
                 currentState.password
             )
 
             _loginState.update {
-                if (success) {
+                if (result.isSuccess) {
                     it.copy(isLoading = false)
                 } else {
                     it.copy(
                         isLoading = false,
-                        loginError = "Credenciales incorrectas"
+                        loginError = result.exceptionOrNull()?.message ?: "Error al iniciar sesión"
                     )
                 }
             }
 
-            if (success) {
+            if (result.isSuccess) {
                 onSuccess()
             }
         }
@@ -157,20 +157,22 @@ class AuthViewModel : ViewModel() {
             return
         }
 
-        UserRepository.register(
-            currentState.name,
-            currentState.email,
-            currentState.password
-        )
-
-        onSuccess()
+        viewModelScope.launch {
+            userRepository.register(
+                currentState.name,
+                currentState.email,
+                currentState.password
+            )
+            onSuccess()
+        }
     }
 
     // PROFILE (Operaciones)
     fun logout(onLogoutSuccess: () -> Unit) {
 
-        UserRepository.logout()
-
-        onLogoutSuccess()
+        viewModelScope.launch {
+            userRepository.logout()
+            onLogoutSuccess()
+        }
     }
 }
