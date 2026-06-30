@@ -1,6 +1,7 @@
 package com.example.ecommerce_template.ui.viewModel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope // <-- Esta es la importación clave
 import com.example.ecommerce_template.data.product.Product
 import com.example.ecommerce_template.data.product.ProductRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,8 @@ class ProductViewModel(
     }
 
     private fun fetchProducts() {
-        androidx.lifecycle.viewModelScope.launch {
+        // Quitamos el 'androidx.lifecycle.' y dejamos solo viewModelScope
+        viewModelScope.launch {
             val result = repository.getAllProducts()
             if (result.isSuccess) {
                 _products.value = result.getOrNull() ?: emptyList()

@@ -33,6 +33,7 @@ import com.example.ecommerce_template.ui.components.core.IronTextFieldBase
 import com.example.ecommerce_template.ui.components.core.PrimaryButton
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
 import com.example.ecommerce_template.ui.viewModel.AuthViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RegisterScreen(
@@ -40,7 +41,7 @@ fun RegisterScreen(
 
     onRegisterSuccess: () -> Unit,
     onLoginClick: () -> Unit,
-    viewModel: AuthViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: AuthViewModel = koinViewModel()
 ) {
     // 1. RECOLECTAR EL ESTADO DE REGISTRO DESDE EL VIEWMODEL
     val registerUiState by viewModel.registerState.collectAsState()

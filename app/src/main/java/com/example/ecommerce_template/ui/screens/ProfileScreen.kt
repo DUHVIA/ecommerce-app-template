@@ -23,12 +23,13 @@ import com.example.ecommerce_template.data.auth.UserRepository
 import com.example.ecommerce_template.ui.components.core.PrimaryButton
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
 import com.example.ecommerce_template.ui.viewModel.AuthViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ProfileScreen(
     onLogout: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: AuthViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: AuthViewModel = koinViewModel()
 ) {
     val profileUiState by viewModel.profileState.collectAsState()
 

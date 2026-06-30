@@ -18,8 +18,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ecommerce_template.ui.viewModel.CheckoutViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,7 +27,7 @@ fun CheckoutScreen(
     modifier: Modifier = Modifier,
     onOrderPlaced: () -> Unit,
     onBackClick: () -> Unit,
-    checkoutViewModel: CheckoutViewModel = viewModel()
+    checkoutViewModel: CheckoutViewModel = koinViewModel()
 
 ) {
     val uiState by checkoutViewModel.uiState.collectAsStateWithLifecycle()

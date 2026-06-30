@@ -41,13 +41,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
 import com.example.ecommerce_template.ui.viewModel.CartViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CartScreen(
     onNavigateToDetail: (String) -> Unit,
     onCheckoutClick: () -> Unit,
     modifier: Modifier = Modifier,
-    cartViewModel: CartViewModel = viewModel()
+    cartViewModel: CartViewModel = koinViewModel()
 ) {
 
     val uiState by cartViewModel.uiState.collectAsStateWithLifecycle()

@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
 import com.example.ecommerce_template.ui.viewModel.ProductViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,7 +49,7 @@ fun ProductDetailScreen(
     productId: String,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    productViewModel: ProductViewModel = viewModel()
+    productViewModel: ProductViewModel = koinViewModel()
 ) {
     val product = productViewModel.getProductById(productId)
     if (product == null) {

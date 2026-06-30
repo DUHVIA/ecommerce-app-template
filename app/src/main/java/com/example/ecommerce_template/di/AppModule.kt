@@ -8,6 +8,9 @@ import com.example.ecommerce_template.data.utils.SearchLogger
 import com.example.ecommerce_template.data.utils.SessionManager
 import com.example.ecommerce_template.data.utils.TokenManager
 import com.example.ecommerce_template.ui.viewModel.AuthViewModel
+import com.example.ecommerce_template.ui.viewModel.CartViewModel
+import com.example.ecommerce_template.ui.viewModel.CheckoutViewModel
+import com.example.ecommerce_template.ui.viewModel.OrderHistoryViewModel
 import com.example.ecommerce_template.ui.viewModel.ProductViewModel
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -56,4 +59,7 @@ val appModule = module {
     // ViewModels
     viewModel { ProductViewModel(get()) }
     viewModel { AuthViewModel(get()) }
+    viewModel { CartViewModel() }
+    viewModel { CheckoutViewModel() }
+    viewModel { OrderHistoryViewModel() }
 }

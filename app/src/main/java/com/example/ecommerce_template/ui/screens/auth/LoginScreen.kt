@@ -33,13 +33,14 @@ import com.example.ecommerce_template.ui.components.core.IronTextFieldBase
 import com.example.ecommerce_template.ui.components.core.PrimaryButton
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
 import com.example.ecommerce_template.ui.viewModel.AuthViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
     onLoginSuccess: () -> Unit,
     onRegisterClick: () -> Unit,
-    viewModel: AuthViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: AuthViewModel = koinViewModel()
 ) {
     val loginUiState by viewModel.loginState.collectAsState()
 

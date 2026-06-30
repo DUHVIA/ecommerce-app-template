@@ -32,12 +32,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ecommerce_template.ui.components.profile.OrderHistoryCard
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
 import com.example.ecommerce_template.ui.viewModel.OrderHistoryViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun PurchaseHistoryScreen(
     modifier: Modifier = Modifier,
-    orderHistoryViewModel: OrderHistoryViewModel = viewModel()
+    orderHistoryViewModel: OrderHistoryViewModel = koinViewModel()
 ) {
     val uiState by orderHistoryViewModel.uiState.collectAsStateWithLifecycle()
 
