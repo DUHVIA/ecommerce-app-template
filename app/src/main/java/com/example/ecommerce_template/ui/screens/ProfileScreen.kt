@@ -60,14 +60,16 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Nombre y Estado conectados al UiState
+        val isLoggedIn = profileUiState.name.isNotBlank() || profileUiState.email.isNotBlank()
+
+        // Nombre y Estado conectados al UiState o Invitado
         Text(
-            text = profileUiState.name,
+            text = if (isLoggedIn) profileUiState.name else "Modo Invitado",
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black),
             color = MaterialTheme.colorScheme.onBackground
         )
         Text(
-            text = profileUiState.email,
+            text = if (isLoggedIn) profileUiState.email else "Inicia sesión para sincronizar tus compras",
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.primary
         )
@@ -77,9 +79,17 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         PrimaryButton(
-            text = if (profileUiState.isLoading) "LOGGING OUT..." else "LOG OUT",
+            text = if (isLoggedIn) {
+                if (profileUiState.isLoading) "CERRANDO SESIÓN..." else "CERRAR SESIÓN"
+            } else {
+                "INICIAR SESIÓN"
+            },
             onClick = {
-                viewModel.logout(onLogoutSuccess = onLogout)
+                if (isLoggedIn) {
+                    viewModel.logout(onLogoutSuccess = onLogout)
+                } else {
+                    onLogout() // Reutilizamos el callback para enviarlo a Login
+                }
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = !profileUiState.isLoading
