@@ -38,7 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
 import com.example.ecommerce_template.ui.viewModel.ProductViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -86,9 +86,11 @@ fun ProductDetailScreen(
                         .aspectRatio(1f)
                         .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
                 ) {
-                    Image(
-                        painter = painterResource(id = product.imageRes),
+                    AsyncImage(
+                        model = product.imageUrl ?: product.imageRes,
                         contentDescription = "Imagen de ${product.name}",
+                        placeholder = painterResource(id = product.imageRes),
+                        error = painterResource(id = product.imageRes),
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(RoundedCornerShape(16.dp)),

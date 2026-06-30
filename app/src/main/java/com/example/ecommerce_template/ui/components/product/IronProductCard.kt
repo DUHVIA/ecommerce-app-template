@@ -34,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.ecommerce_template.R
 import com.example.ecommerce_template.data.product.Product
 @Composable
@@ -60,9 +61,11 @@ fun IronProductCard(
                     .aspectRatio(1f)
                     .background(Color(0xFF0F0F0F), RoundedCornerShape(16.dp))
             ) {
-                Image(
-                    painter = painterResource(id = item.imageRes),
+                AsyncImage(
+                    model = item.imageUrl ?: item.imageRes,
                     contentDescription = "Imagen de ${item.name}",
+                    placeholder = painterResource(id = item.imageRes),
+                    error = painterResource(id = item.imageRes),
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(16.dp)),

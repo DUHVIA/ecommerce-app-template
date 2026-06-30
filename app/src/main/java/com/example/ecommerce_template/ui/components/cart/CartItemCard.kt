@@ -34,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.ecommerce_template.R
 import com.example.ecommerce_template.data.cart.CartItem
 import com.example.ecommerce_template.data.product.Product
@@ -66,9 +67,11 @@ fun CartItemCard(
                     .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
                     .clip(RoundedCornerShape(4.dp))
             ) {
-                Image(
-                    painter = painterResource(id = item.product.imageRes),
+                AsyncImage(
+                    model = item.product.imageUrl ?: item.product.imageRes,
                     contentDescription = "Imagen de ${item.product.name}",
+                    placeholder = painterResource(id = item.product.imageRes),
+                    error = painterResource(id = item.product.imageRes),
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
