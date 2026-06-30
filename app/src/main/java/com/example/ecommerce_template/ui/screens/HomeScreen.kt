@@ -49,8 +49,8 @@ fun HomeScreen(
 
     var searchQuery by remember { mutableStateOf("") }
 
-    //val products by productViewModel.products.collectAsStateWithLifecycle()
     val products by productViewModel.products.collectAsStateWithLifecycle()
+    val isOffline by productViewModel.isOfflineMode.collectAsStateWithLifecycle()
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -67,6 +67,25 @@ fun HomeScreen(
                 value = searchQuery,
                 onValueChange = { searchQuery = it }
             )
+        }
+
+        if (isOffline) {
+            item(span = { GridItemSpan(2) }) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFFE57373), RoundedCornerShape(8.dp))
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Estás usando el modo offline (datos locales)",
+                        color = Color.White,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
         }
 
         item(span = { GridItemSpan(2) }) {
