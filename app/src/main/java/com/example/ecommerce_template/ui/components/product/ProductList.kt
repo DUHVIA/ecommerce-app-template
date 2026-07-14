@@ -1,4 +1,4 @@
-package com.example.ecommerce_template.ui.components.product
+﻿package com.example.ecommerce_template.ui.components.product
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,7 +29,7 @@ val mockSupplements = listOf(
 
 //SOLID APPLIED
 @Composable
-fun <T> IronListBase(
+fun <T> ListBase(
     items: List<T>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(16.dp),
@@ -53,12 +53,12 @@ fun ProductList(
     onAddToCart: (Product) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    IronListBase(
+    ListBase(
         items = productos,
         modifier = modifier
     ) { producto ->
         // Aquí le decimos a la lista base CÓMO debe dibujar cada 'Product'
-        ProductCard(
+        ProductListItem(
             nombre = producto.name,
             precio = producto.price,
             onAddClick = { onAddToCart(producto) }

@@ -1,8 +1,19 @@
 package com.example.ecommerce_template.data.cart
 
-import com.example.ecommerce_template.data.product.Product
-
 data class CartItem(
-    val product: Product,
-    var quantity: Int
+    val id: String,
+    val productId: String,
+    val productName: String,
+    val productImageUrl: String?,
+    val unitPrice: Double,
+    val subtotal: Double,
+    val quantity: Int
 )
+
+data class Cart(
+    val items: List<CartItem>,
+    val itemsCount: Int,
+    val subtotal: Double
+) {
+    val isEmpty: Boolean get() = items.isEmpty()
+}

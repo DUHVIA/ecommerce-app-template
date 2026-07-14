@@ -1,4 +1,4 @@
-package com.example.ecommerce_template.ui.components.core
+﻿package com.example.ecommerce_template.ui.components.core
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,7 +20,7 @@ import com.example.ecommerce_template.ui.theme.IronCoreTheme
 
 //SOLID APPLIED
 @Composable
-fun IronTextFieldBase(
+fun TextFieldBase(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -55,13 +55,13 @@ fun IronTextFieldBase(
 }
 
 @Composable
-fun IronSearchBar(
+fun SearchBar(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     placeholderText: String = "SEARCH PERFORMANCE GEAR..."
 ) {
-    IronTextFieldBase(
+    TextFieldBase(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier,
@@ -82,6 +82,6 @@ fun IronSearchBar(
 @Composable
 fun SearchBarPreview() {
     IronCoreTheme {
-        IronSearchBar(value = "", onValueChange = {})
+        SearchBar(value = "", onValueChange = {})
     }
 }

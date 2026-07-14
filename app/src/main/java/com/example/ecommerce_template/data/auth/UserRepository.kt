@@ -1,63 +1,89 @@
-package com.example.ecommerce_template.data.auth
+﻿package com.example.ecommerce_template.data.auth
 
-import androidx.compose.runtime.mutableStateListOf
+import com.example.ecommerce_template.core.ApiResult
+import com.example.ecommerce_template.core.safeCall
+import com.example.ecommerce_template.network.api.AuthApi
+import com.example.ecommerce_template.network.api.UserApi
+import com.example.ecommerce_template.network.dto.auth.LoginRequestDto
+import com.example.ecommerce_template.network.dto.auth.RegisterRequestDto
+import com.example.ecommerce_template.network.dto.user.PasswordUpdateDto
+import com.example.ecommerce_template.network.dto.user.ProfileUpsertDto
+import com.example.ecommerce_template.network.dto.user.UserUpdateDto
+import com.example.ecommerce_template.network.mapper.toDomain
+import com.example.ecommerce_template.data.profile.Profile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-object UserRepository {
-
-    private val _registeredUsers = mutableStateListOf<User>()
+class UserRepository(
+    private val authApi: AuthApi,
+    private val userApi: UserApi,
+    private val tokenStore: TokenStore
+) {
 
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
 
-    init {
-        _registeredUsers.add(
-            User(
-                id = "DEFAULT-001",
-                name = "Gabriel Soto",
-                email = "admin",
-                password = "admin"
+    suspend fun login(email: String, password: String): ApiResult<User> {
+        val result = safeCall { authApi.login(LoginRequestDto(email = email, password = password)) }
+        return when (result) {
+            is ApiResult.Success -> {
+                tokenStore.save(result.data.accessToken, result.data.refreshToken)
+                refreshMe()
+            }
+            is ApiResult.Error -> result
+            ApiResult.Loading -> ApiResult.Loading
+        }
+    }
+
+    suspend fun register(name: String, email: String, password: String): ApiResult<User> {
+        val result = safeCall {
+            authApi.register(RegisterRequestDto(name = name, email = email, password = password))
+        }
+        return when (result) {
+            is ApiResult.Success -> {
+                login(email, password)
+            }
+            is ApiResult.Error -> result
+            ApiResult.Loading -> ApiResult.Loading
+        }
+    }
+
+    suspend fun refreshMe(): ApiResult<User> {
+        val result = safeCall { userApi.me() }
+        if (result is ApiResult.Success) {
+            _currentUser.value = result.data.toDomain()
+        } else if (result is ApiResult.Error && result.httpStatus == 401) {
+            tokenStore.clear()
+            _currentUser.value = null
+        }
+        return result.map { it.toDomain() }
+    }
+
+    suspend fun updateMe(name: String?, email: String?): ApiResult<User> {
+        val result = safeCall { userApi.updateMe(UserUpdateDto(name = name, email = email)) }
+        if (result is ApiResult.Success) {
+            _currentUser.value = result.data.toDomain()
+        }
+        return result.map { it.toDomain() }
+    }
+
+    suspend fun changePassword(currentPassword: String, newPassword: String): ApiResult<Unit> {
+        return safeCall {
+            userApi.changePassword(
+                PasswordUpdateDto(currentPassword = currentPassword, newPassword = newPassword)
             )
-        )
-    }
-
-    fun register(name: String, email: String, password: String) {
-        val newUser = User(
-            id = "USR-${System.currentTimeMillis()}",
-            name = name,
-            email = email,
-            password = password
-        )
-
-        _registeredUsers.add(newUser)
-        _currentUser.value = newUser
-    }
-
-    fun login(email: String, password: String): Boolean {
-        val user = _registeredUsers.find {
-            it.email == email && it.password == password
-        }
-
-        return if (user != null) {
-            _currentUser.value = user
-            true
-        } else {
-            false
+            Unit
         }
     }
 
-    fun logout() {
+    suspend fun upsertProfile(profile: ProfileUpsertDto): ApiResult<Profile> {
+        val result = safeCall { userApi.upsertProfile(profile) }
+        return result.map { it.toDomain() }
+    }
+
+    suspend fun logout() {
+        tokenStore.clear()
         _currentUser.value = null
-    }
-
-    fun getCurrentUserProfile(): UserPublicProfile? {
-        return _currentUser.value?.let { user ->
-            UserPublicProfile(
-                name = user.name,
-                email = user.email
-            )
-        }
     }
 }

@@ -1,127 +1,158 @@
-package com.example.ecommerce_template.ui.components.product
+﻿package com.example.ecommerce_template.ui.components.product
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ecommerce_template.ui.components.core.PrimaryButton
+import coil.compose.AsyncImage
+import com.example.ecommerce_template.R
+import com.example.ecommerce_template.data.product.Product
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
 
-//SOLID APPLIED
-// 1. Componente de Título (SRP: Su única razón de cambio es si cambia el estilo del título)
 @Composable
-fun ProductCardTitle(
-    nombre: String,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = nombre,
-        style = MaterialTheme.typography.titleMedium.copy(
-            fontWeight = FontWeight.Bold
-        ),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier
-    )
-}
-
-// 2. Componente de Precio (SRP: Maneja la lógica de la moneda y el estilo del precio)
-@Composable
-fun ProductCardPrice(
+fun ProductCard(
     modifier: Modifier = Modifier,
-    precio: Double,
-    moneda: String = "S/"
-) {
-    Text(
-        text = "$moneda $precio",
-        style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = modifier
-    )
-}
-
-// 3. Contenedor Base (OCP: Abierto a extensión mediante "slots" (lambdas), cerrado a modificación)
-@Composable
-fun ProductCardBase(
-    modifier: Modifier = Modifier,
-    shape: Shape = MaterialTheme.shapes.medium,
-    colors: CardColors = CardDefaults.cardColors(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-    ),
-    titleSlot: @Composable () -> Unit,
-    priceSlot: @Composable () -> Unit,
-    actionSlot: @Composable () -> Unit
+    item: Product,
+    badgeText: String? = item.categoryName,
+    onAddToCart: () -> Unit,
+    onClick: () -> Unit,
+    badgeColor: Color = MaterialTheme.colorScheme.primary
 ) {
     Card(
+        onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-        shape = shape,
-        colors = colors
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            titleSlot()
+        Column(modifier = Modifier.padding(12.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .background(Color(0xFF0F0F0F), RoundedCornerShape(16.dp))
+            ) {
+                AsyncImage(
+                    model = item.imageUrl,
+                    contentDescription = "Imagen de ${item.name}",
+                    placeholder = painterResource(R.drawable.product_placeholder),
+                    error = painterResource(R.drawable.product_placeholder),
+                    fallback = painterResource(R.drawable.product_placeholder),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(16.dp)),
+                    contentScale = ContentScale.Crop
+                )
+
+                if (badgeText != null) {
+                    Text(
+                        text = badgeText,
+                        style = MaterialTheme.typography.labelSmall.copy(color = Color.Black),
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .background(badgeColor, RoundedCornerShape(2.dp))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = item.categoryName.uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.Gray
+            )
+
             Spacer(modifier = Modifier.height(4.dp))
 
-            priceSlot()
-            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = item.name.uppercase(),
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
 
-            actionSlot()
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "S/ ${"%.2f".format(item.price)}",
+                    style = MaterialTheme.typography.labelLarge
+                )
+
+                IconButton(
+                    onClick = onAddToCart,
+                    modifier = Modifier.size(36.dp),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = Color(0xFF333333),
+                        contentColor = Color.White
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Add,
+                        contentDescription = "Añadir",
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
         }
     }
 }
 
-// 4. Componente de Dominio Específico (El que realmente usas en tu vista, uniendo las piezas)
-@Composable
-fun ProductCard(
-    nombre: String,
-    precio: Double,
-    onAddClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    shape: Shape = MaterialTheme.shapes.medium,
-    colors: CardColors = CardDefaults.cardColors(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-    )
-) {
-    ProductCardBase(
-        modifier = modifier,
-        shape = shape,
-        colors = colors,
-        titleSlot = { ProductCardTitle(nombre = nombre) },
-        priceSlot = { ProductCardPrice(precio = precio) },
-        actionSlot = {
-            // Reutilizamos el componente core para mantener consistencia
-            PrimaryButton(
-                text = "Agregar",
-                onClick = onAddClick,
-                modifier = Modifier.wrapContentWidth()
-            )
-        }
-    )
-}
-
-// 5. Preview Integrado
-@Preview(showBackground = true)
+@Preview(name = "Light Mode", showBackground = true)
 @Composable
 fun ProductCardPreview() {
-    // Usamos el IronCoreTheme para que herede los colores oscuros de Duhvia que configuramos antes
     IronCoreTheme {
-        ProductCard(
-            nombre = "Proteína Whey Aislada 2kg",
-            precio = 249.90,
-            onAddClick = {}
-        )
+        Surface(modifier = Modifier.padding(16.dp)) {
+            ProductCard(
+                item = Product(
+                    id = "5",
+                    name = "Shaker / Mezclador Pro 600ml",
+                    description = "Vaso mezclador con compartimento para pastillas y polvo.",
+                    price = 25.00,
+                    categoryId = "cat-accesorios",
+                    categoryName = "Accesorios",
+                    imageUrl = null,
+                    stock = 50
+                ),
+                onAddToCart = { },
+                onClick = { }
+            )
+        }
     }
 }

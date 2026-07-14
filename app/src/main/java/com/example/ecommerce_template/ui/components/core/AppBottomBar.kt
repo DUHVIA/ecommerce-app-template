@@ -1,4 +1,4 @@
-package com.example.ecommerce_template.ui.components.core
+﻿package com.example.ecommerce_template.ui.components.core
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
@@ -18,18 +18,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.ecommerce_template.ui.theme.IronCoreTheme
 
-data class IronNavItem(val label: String, val icon: ImageVector, val route: String)
+data class NavItem(val label: String, val icon: ImageVector, val route: String)
 
 val ironBottomNavItems = listOf(
-    IronNavItem("HOME", Icons.Outlined.Home, "home"),
-    IronNavItem("SHOP", Icons.Outlined.ShoppingCart, "shop"),
-    IronNavItem("PROFILE", Icons.Outlined.Person, "profile")
+    NavItem("HOME", Icons.Outlined.Home, "home"),
+    NavItem("SHOP", Icons.Outlined.ShoppingCart, "shop"),
+    NavItem("PROFILE", Icons.Outlined.Person, "profile")
 )
 
 //SOLID APPLIED
 @Composable
-fun RowScope.IronBottomBarItem(
-    item: IronNavItem,
+fun RowScope.AppBottomBarItem(
+    item: NavItem,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -49,8 +49,8 @@ fun RowScope.IronBottomBarItem(
 }
 
 @Composable
-fun IronBottomBar(
-    items: List<IronNavItem>,
+fun AppBottomBar(
+    items: List<NavItem>,
     currentRoute: String,
     onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -61,7 +61,7 @@ fun IronBottomBar(
         contentColor = MaterialTheme.colorScheme.onSurface
     ) {
         items.forEach { item ->
-            IronBottomBarItem(
+            AppBottomBarItem(
                 item = item,
                 isSelected = currentRoute == item.route,
                 onClick = { onItemClick(item.route) }
@@ -72,9 +72,9 @@ fun IronBottomBar(
 
 @Preview(showBackground = true)
 @Composable
-fun IronBottomBarPreview() {
+fun AppBottomBarPreview() {
     IronCoreTheme {
-        IronBottomBar(
+        AppBottomBar(
             items = ironBottomNavItems,
             currentRoute = "home",
             onItemClick = {}

@@ -1,4 +1,4 @@
-package com.example.ecommerce_template.ui.components.core
+﻿package com.example.ecommerce_template.ui.components.core
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
@@ -22,7 +22,7 @@ import com.example.ecommerce_template.ui.theme.IronCoreTheme
 //SOLID APPLIED
 // 1. Componente de Contenido Interno (SRP: Solo se encarga de acomodar el texto y un ícono)
 @Composable
-fun IronButtonContent(
+fun ButtonContent(
     text: String,
     leadingIcon: @Composable (() -> Unit)? = null
 ) {
@@ -69,7 +69,7 @@ fun PrimaryButton(
     leadingIcon: @Composable (() -> Unit)? = null
 ) {
     PrimaryButtonBase(onClick = onClick, modifier = modifier, enabled = enabled) {
-        IronButtonContent(text = text, leadingIcon = leadingIcon)
+        ButtonContent(text = text, leadingIcon = leadingIcon)
     }
 }
 
@@ -106,7 +106,7 @@ fun SecondaryOutlinedButton(
     leadingIcon: @Composable (() -> Unit)? = null
 ) {
     SecondaryOutlinedButtonBase(onClick = onClick, modifier = modifier, enabled = enabled) {
-        IronButtonContent(text = text, leadingIcon = leadingIcon)
+        ButtonContent(text = text, leadingIcon = leadingIcon)
     }
 }
 

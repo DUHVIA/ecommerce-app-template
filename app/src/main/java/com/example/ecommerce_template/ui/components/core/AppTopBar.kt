@@ -1,4 +1,4 @@
-package com.example.ecommerce_template.ui.components.core
+﻿package com.example.ecommerce_template.ui.components.core
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -20,7 +20,7 @@ import com.example.ecommerce_template.ui.theme.IronCoreTheme
 
 // 1. Componente de Título (Responsabilidad: Solo renderizar textos de cabecera)
 @Composable
-fun IronTopBarTitle(title: String = "IRON CORE") {
+fun TopBarTitle(title: String = "IRON CORE") {
     Text(
         text = title,
         style = MaterialTheme.typography.headlineMedium
@@ -29,7 +29,7 @@ fun IronTopBarTitle(title: String = "IRON CORE") {
 
 // 2. Componente de Navegación (Responsabilidad: Solo renderizar el ícono izquierdo)
 @Composable
-fun IronTopBarNavigationIcon(
+fun TopBarNavigationIcon(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -44,7 +44,7 @@ fun IronTopBarNavigationIcon(
 
 // 3. Componente de Acción (Responsabilidad: Solo renderizar los botones derechos, como el carrito)
 @Composable
-fun IronTopBarCartAction(
+fun TopBarCartAction(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -62,7 +62,7 @@ fun IronTopBarCartAction(
 // Cumple con OCP: Está abierto a extensión (puedes pasarle otros composables) pero cerrado a modificación.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun IronCoreTopBar(
+fun AppTopBar(
     modifier: Modifier = Modifier,
     onMenuClick: () -> Unit = {},
     onCartClick: () -> Unit = {},
@@ -70,9 +70,9 @@ fun IronCoreTopBar(
 ) {
     CenterAlignedTopAppBar(
         modifier = modifier,
-        title = { IronTopBarTitle(title) },
-        navigationIcon = { IronTopBarNavigationIcon(onClick = onMenuClick) },
-        actions = { IronTopBarCartAction(onClick = onCartClick) },
+        title = { TopBarTitle(title) },
+        navigationIcon = { TopBarNavigationIcon(onClick = onMenuClick) },
+        actions = { TopBarCartAction(onClick = onCartClick) },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
             scrolledContainerColor = Color.Unspecified,
@@ -87,6 +87,6 @@ fun IronCoreTopBar(
 @Composable
 fun AppTopBarPreview() {
     IronCoreTheme {
-        IronCoreTopBar()
+        AppTopBar()
     }
 }

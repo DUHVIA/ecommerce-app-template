@@ -1,60 +1,84 @@
-package com.example.ecommerce_template.data.product
+﻿package com.example.ecommerce_template.data.product
 
-import com.example.ecommerce_template.R
+import com.example.ecommerce_template.core.ApiResult
+import com.example.ecommerce_template.core.safeCall
+import com.example.ecommerce_template.local.ProductDao
+import com.example.ecommerce_template.local.toDomain
+import com.example.ecommerce_template.local.toEntity
+import com.example.ecommerce_template.network.NetworkMonitor
+import com.example.ecommerce_template.network.api.CatalogApi
+import com.example.ecommerce_template.network.mapper.Category
+import com.example.ecommerce_template.network.mapper.toDomain
+import com.example.ecommerce_template.core.SearchLogger
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 
-object ProductRepository {
+sealed class RefreshOutcome {
+    data object Synced : RefreshOutcome()
+    data object Offline : RefreshOutcome()
+    data class Error(val message: String) : RefreshOutcome()
+}
 
-    private val mockProducts = listOf(
-        Product(
-            id = 1,
-            name = "Proteína Whey Gold Standard 2lb",
-            description = "Aislado de proteína de suero de leche, 24g de proteína por servicio. Sabor Chocolate.",
-            price = 149.90,
-            category = "Suplementos",
-            imageRes = R.drawable.prod_proteina,
-            stock = 15
-        ),
-        Product(
-            id = 2,
-            name = "Creatina Monohidratada 300g",
-            description = "Creatina micronizada pura para mejorar la fuerza y el rendimiento muscular. Sin sabor.",
-            price = 89.00,
-            category = "Suplementos",
-            imageRes = R.drawable.prod_creatina,
-            stock = 20
-        ),
-        Product(
-            id = 3,
-            name = "Cinturón de Cuero para Powerlifting",
-            description = "Cinturón de soporte lumbar de alta resistencia, 10mm de grosor con hebilla de acero.",
-            price = 120.00,
-            category = "Accesorios",
-            imageRes = R.drawable.prod_cinturon,
-            stock = 5
-        ),
-        Product(
-            id = 4,
-            name = "Mancuernas Hexagonales 10kg (Par)",
-            description = "Mancuernas de caucho de alta calidad con mango cromado ergonómico y antideslizante.",
-            price = 160.00,
-            category = "Equipamiento",
-            imageRes = R.drawable.prod_mancuerna,
-            stock = 8
-        ),
-        Product(
-            id = 5,
-            name = "Shaker / Mezclador Pro 600ml",
-            description = "Vaso mezclador con compartimento para pastillas y polvo. Libre de BPA.",
-            price = 25.00,
-            category = "Accesorios",
-            imageRes = R.drawable.prod_shaker,
-            stock = 50
-        )
-    )
+class ProductRepository(
+    private val catalogApi: CatalogApi,
+    private val productDao: ProductDao,
+    private val networkMonitor: NetworkMonitor,
+    private val logger: SearchLogger
+) {
 
-    fun getAllProducts(): List<Product> = mockProducts
+    val products: Flow<List<Product>> = productDao.observeAll().map { list ->
+        list.map { it.toDomain() }
+    }
 
-    fun getProductById(id: Int): Product? = mockProducts.find { it.id == id }
+    val lastSyncAt: Flow<Long> = productDao.observeLastSyncAt()
 
-    fun getProductsByCategory(category: String): List<Product> = mockProducts.filter { it.category == category }
+    val isOnline: Flow<Boolean> = networkMonitor.observe()
+
+    fun productByIdFlow(id: String): Flow<Product?> =
+        productDao.observeById(id).map { it?.toDomain() }
+
+    suspend fun refresh(): RefreshOutcome {
+        val result = safeCall { catalogApi.products(size = 100) }
+        return when (result) {
+            is ApiResult.Success -> {
+                val now = System.currentTimeMillis()
+                val entities = result.data.items.map { it.toDomain().toEntity(now) }
+                productDao.replaceAll(entities, now)
+                logger.saveSearch("Consultó el catálogo completo de productos (${entities.size} ítems)")
+                RefreshOutcome.Synced
+            }
+            is ApiResult.Error -> {
+                if (result.httpStatus == null) RefreshOutcome.Offline else RefreshOutcome.Error(result.message)
+            }
+            ApiResult.Loading -> RefreshOutcome.Offline
+        }
+    }
+
+    suspend fun refreshProductById(id: String): RefreshOutcome {
+        val result = safeCall { catalogApi.productById(id) }
+        return when (result) {
+            is ApiResult.Success -> {
+                val now = System.currentTimeMillis()
+                productDao.upsertAll(listOf(result.data.toDomain().toEntity(now)))
+                logger.saveSearch("Visualizó el producto: ${result.data.name}")
+                RefreshOutcome.Synced
+            }
+            is ApiResult.Error -> {
+                if (result.httpStatus == null) {
+                    val cached = productDao.getById(id)
+                    if (cached == null) RefreshOutcome.Offline else RefreshOutcome.Synced
+                } else {
+                    RefreshOutcome.Error(result.message)
+                }
+            }
+            ApiResult.Loading -> RefreshOutcome.Offline
+        }
+    }
+
+    suspend fun getCategories(): ApiResult<List<Category>> =
+        safeCall { catalogApi.categories() }.map { list -> list.map { it.toDomain() } }
+
+    fun observeCategoriesAndProducts() =
+        combine(products, productDao.observeLastSyncAt()) { list, sync -> list to sync }
 }
