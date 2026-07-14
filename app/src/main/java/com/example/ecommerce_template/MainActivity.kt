@@ -32,7 +32,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             IronCoreTheme {
-                AppNavigation(pendingRoute = pendingRouteState.value)
+                val routeToNavigate = pendingRouteState.value
+                AppNavigation(pendingRoute = routeToNavigate)
             }
         }
     }
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+
         pendingRouteState.value = intent.getStringExtra(EXTRA_TARGET_ROUTE)
     }
 
@@ -53,7 +55,6 @@ class MainActivity : ComponentActivity() {
             }
 
             shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
-                // Aquí podrías mostrar un diálogo explicando por qué se necesita el permiso
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
 
@@ -64,6 +65,6 @@ class MainActivity : ComponentActivity() {
     }
 
     companion object {
-        const val EXTRA_TARGET_ROUTE = "target_route"
+        const val EXTRA_TARGET_ROUTE = "route"
     }
 }

@@ -57,7 +57,11 @@ fun AppNavigation(pendingRoute: String? = null) {
 
     LaunchedEffect(pendingRoute) {
         pendingRoute?.let { route ->
-            if (route in validDeepLinkRoutes) {
+            val isStaticRouteValid = route in validDeepLinkRoutes
+
+            val isDynamicProductRoute = route.startsWith("${Routes.PRODUCT_DETAIL}/")
+
+            if (isStaticRouteValid || isDynamicProductRoute) {
                 navController.navigate(route) {
                     popUpTo(Routes.HOME) { inclusive = false }
                     launchSingleTop = true
